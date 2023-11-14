@@ -4,6 +4,7 @@ import '~/styles/globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import Layout from '~/components/layout'
+import { NextUIProvider } from '@nextui-org/react'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   weight: ['400', '700'],
@@ -14,20 +15,20 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <>
-      <style jsx global>
-        {`
-          html {
-            font-family: ${plusJakartaSans.style.fontFamily};
-          }
-        `}
-      </style>
-      <Layout>
-        <ClerkProvider {...pageProps}>
+    <ClerkProvider {...pageProps}>
+      <NextUIProvider>
+        <style jsx global>
+          {`
+            html {
+              font-family: ${plusJakartaSans.style.fontFamily};
+            }
+          `}
+        </style>
+        <Layout>
           <Component {...pageProps} />
-        </ClerkProvider>
-      </Layout>
-    </>
+        </Layout>
+      </NextUIProvider>
+    </ClerkProvider>
   )
 }
 

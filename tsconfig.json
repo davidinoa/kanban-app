@@ -27,7 +27,9 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
-    }
+    },
+
+    "typeRoots": ["./node_modules/@types", "./custom.d.ts", "./next-env.d.ts"]
   },
   "include": [
     ".eslintrc.cjs",
