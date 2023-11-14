@@ -3,6 +3,7 @@ import { api } from '~/utils/api'
 import '~/styles/globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Plus_Jakarta_Sans } from 'next/font/google'
+import Layout from '~/components/layout'
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   weight: ['400', '700'],
@@ -21,9 +22,11 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           }
         `}
       </style>
-      <ClerkProvider {...pageProps}>
-        <Component {...pageProps} />
-      </ClerkProvider>
+      <Layout>
+        <ClerkProvider {...pageProps}>
+          <Component {...pageProps} />
+        </ClerkProvider>
+      </Layout>
     </>
   )
 }
