@@ -1,15 +1,15 @@
-import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import Head from "next/head";
-import { api } from "~/utils/api";
+import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs'
+import Head from 'next/head'
+import { api } from '~/utils/api'
 
 export default function Home() {
-  const userData = useUser();
-  const userId = userData.user?.id ?? "";
+  const userData = useUser()
+  const userId = userData.user?.id ?? ''
   const boards = api.boards.getAllBoardsForUser.useQuery({
     userId: userId,
-  });
+  })
 
-  console.log(boards);
+  console.log(boards)
 
   return (
     <>
@@ -19,7 +19,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="flex flex-col text-white">
+        <div className="bg flex flex-col text-white">
           {userData.isSignedIn ? (
             <SignOutButton>Sign Out</SignOutButton>
           ) : (
@@ -28,5 +28,5 @@ export default function Home() {
         </div>
       </main>
     </>
-  );
+  )
 }
