@@ -19,3 +19,56 @@ model Post {
 
     @@index([name])
 }
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  name      String   @db.VarChar(255)
+  columns   Column[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([createdAt]) // Index for sorting boards by creation date
+}
+
+model Column {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  boardId   Int
+  tasks     Task[]
+  Board     Board    @relation(fields: [boardId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([boardId]) // Index for fetching columns by board
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(255)
+  description String?   @db.Text // Changed to Text type for longer entries
+  status      String    @db.VarChar(255)
+  columnId    Int
+  subtasks    Subtask[]
+  Column      Column    @relation(fields: [columnId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([columnId]) // Index for fetching tasks within a column
+  @@index([status])   // Index for filtering tasks by status
+  @@index([createdAt]) // Index for sorting tasks by creation date
+}
+
+model Subtask {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  isCompleted Boolean
+  taskId      Int
+  Task        Task     @relation(fields: [taskId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([taskId]) // Index for fetching subtasks of a task
+  @@index([isCompleted]) // Index for filtering subtasks by completion status
+}
