@@ -1,15 +1,16 @@
 import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs'
 import Head from 'next/head'
-import { api } from '~/utils/api'
+// import { api } from '~/utils/api'
 
 export default function Home() {
   const userData = useUser()
-  const userId = userData.user?.id ?? ''
-  const boards = api.boards.getAllBoardsForUser.useQuery({
-    userId: userId,
-  })
-
-  console.log(boards)
+  // const userId = userData.user?.id ?? ''
+  // const boards = api.boards.getAllBoardsForUser.useQuery(
+  //   {
+  //     userId: userId,
+  //   },
+  //   { staleTime: Infinity },
+  // )
 
   return (
     <>

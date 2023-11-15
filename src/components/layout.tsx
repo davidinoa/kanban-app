@@ -1,16 +1,21 @@
 import { type PropsWithChildren } from 'react'
-import Logo from '../assets/logo-light.svg'
+import LogoDark from '../assets/logo-dark.svg'
 import { Divider } from '@nextui-org/react'
+import Button from './button'
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <div className="layout-container h-[100svh]">
-      <header className="flex h-[96px] items-center gap-4 bg-slate-200 px-4">
-        <Logo aria-label="Kanban app logo" />
+    <div className="layout-container dark h-[100svh] min-w-fit">
+      <header className="flex h-[96px] items-center gap-6 px-4">
+        <LogoDark aria-label="Kanban app logo" />
         <Divider orientation="vertical" />
-        <h1 className="grow">Platform Launch</h1>
-        <button>add new task</button>
-        <div>more icon</div>
+        <h1 className="grow text-2xl font-bold leading-tight">
+          Platform Launch
+        </h1>
+        <Button disabled size="large">
+          + Add New Task
+        </Button>
+        <div></div>
       </header>
       <aside className="hidden bg-slate-50 sm:w-[260px] lg:w-[300px]">
         sidebar goes here
