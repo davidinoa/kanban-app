@@ -1,3 +1,5 @@
+'use client'
+
 import { type PropsWithChildren } from 'react'
 import LogoDark from '../assets/logo-dark.svg'
 import { Divider } from '@nextui-org/react'
