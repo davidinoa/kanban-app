@@ -1,4 +1,4 @@
-import { Button as NextUiButton } from '@nextui-org/react'
+import { Button as NextUiButton } from '@nextui-org/button'
 import { type VariantProps, cva } from 'class-variance-authority'
 import { type ComponentProps } from 'react'
 
