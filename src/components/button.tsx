@@ -1,6 +1,7 @@
 import { Button as NextUiButton } from '@nextui-org/button'
 import { type VariantProps, cva } from 'class-variance-authority'
 import { type ComponentProps } from 'react'
+import { twMerge } from 'tailwind-merge'
 
 const buttonStyles = cva(
   [
@@ -46,12 +47,13 @@ export default function Button({
   size,
   children,
   disabled,
+  className,
 }: ButtonProps) {
   return (
     <NextUiButton
       disabled={disabled}
       isIconOnly={variant === 'icon'}
-      className={buttonStyles({ variant, size })}
+      className={twMerge(buttonStyles({ variant, size }), className)}
     >
       {children}
     </NextUiButton>
