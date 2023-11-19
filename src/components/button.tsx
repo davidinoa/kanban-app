@@ -13,7 +13,7 @@ const buttonStyles = cva(
   ],
   {
     variants: {
-      color: {
+      variant: {
         primary: ['bg-purple-100', 'hover:purple-50', 'text-white'],
         secondary: [
           'bg-purple-100',
@@ -25,6 +25,7 @@ const buttonStyles = cva(
           'dark:text-purple-100',
         ],
         danger: ['bg-red-100', 'hover:bg-red-50', 'text-white'],
+        icon: ['bg-transparent', 'hover:bg-gray-50'],
       },
       size: {
         small: ['text-sm'],
@@ -32,7 +33,7 @@ const buttonStyles = cva(
       },
     },
     defaultVariants: {
-      color: 'primary',
+      variant: 'primary',
       size: 'small',
     },
   },
@@ -41,13 +42,17 @@ const buttonStyles = cva(
 type ButtonProps = VariantProps<typeof buttonStyles> & ComponentProps<'button'>
 
 export default function Button({
-  color,
+  variant,
   size,
   children,
   disabled,
 }: ButtonProps) {
   return (
-    <NextUiButton disabled={disabled} className={buttonStyles({ color, size })}>
+    <NextUiButton
+      disabled={disabled}
+      isIconOnly={variant === 'icon'}
+      className={buttonStyles({ variant, size })}
+    >
       {children}
     </NextUiButton>
   )
