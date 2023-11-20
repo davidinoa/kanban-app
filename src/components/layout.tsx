@@ -3,7 +3,7 @@ import Header from './header'
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <div className="layout-container dark h-[100svh] min-w-fit">
+    <div className="layout-container h-[100svh]">
       <Header />
       <aside className="hidden bg-slate-50 sm:w-[260px] lg:w-[300px]">
         sidebar goes here
