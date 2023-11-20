@@ -14,16 +14,18 @@ export default function NavPopover() {
   return (
     <Popover
       isOpen={isOpen}
-      onOpenChange={setIsOpen}
+      onOpenChange={(isOpen) => setIsOpen(isOpen)}
       backdrop="opaque"
       placement="bottom-start"
       offset={36}
     >
-      <PopoverTrigger className="sm:hidden mr-auto">
-        <div className="flex items-center gap-2 cursor-pointer">
-          <h1 className="text-md font-bold leading-tight">Platform Launch</h1>
+      <PopoverTrigger className="md:hidden mr-auto">
+        <button className="outline-none focus-visible:ring-2 ring-offset-2 ring-blue-600 dark:ring-offset-gray-300 flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 dark:hover:bg-gray-200 rounded transition-colors">
+          <h1 className="text-lg font-bold leading-tight truncate">
+            Platform Launch
+          </h1>
           {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-        </div>
+        </button>
       </PopoverTrigger>
       <PopoverContent className="w-[16.5rem] rounded-lg p-4 dark:bg-gray-300 items-start">
         {(titleProps) => (
@@ -49,7 +51,7 @@ export default function NavPopover() {
                 <li>
                   <Button
                     variant="ghost"
-                    className="p-0 w-full justify-start rounded-none rounded-r-full gap-3 h-fit px-6 py-4"
+                    className="p-0 w-full justify-start rounded-none rounded-r-full gap-3 h-fit px-6 py-4 data-[focus-visible=true]:outline-0 focus-visible:ring-2 ring-inset ring-blue-600"
                   >
                     <BoardIcon className="[&_path]:fill-purple-100" />+ Create
                     New Board
