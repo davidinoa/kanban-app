@@ -1,6 +1,7 @@
+import { nextui } from '@nextui-org/react'
 import { type Config } from 'tailwindcss'
 import { fontFamily } from 'tailwindcss/defaultTheme'
-import { nextui } from '@nextui-org/react'
+import plugin from 'tailwindcss/plugin'
 
 export default {
   content: [
@@ -34,5 +35,18 @@ export default {
     },
   },
   darkMode: 'class',
-  plugins: [nextui()],
+  plugins: [
+    nextui(),
+    plugin(function ({ addUtilities }) {
+      addUtilities({
+        '.heading-sm': {
+          fontWeight: '700',
+          fontSize: '0.75rem',
+          lineHeight: '1.25',
+          letterSpacing: '2.4px',
+          color: '#828fa3',
+        },
+      })
+    }),
+  ],
 } satisfies Config

@@ -1,5 +1,5 @@
 import { Button as NextUiButton } from '@nextui-org/button'
-import { type VariantProps, cva } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
 import { type ComponentProps } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -27,6 +27,7 @@ const buttonStyles = cva(
         ],
         danger: ['bg-red-100', 'hover:bg-red-50', 'text-white'],
         icon: ['bg-transparent', 'hover:bg-gray-50'],
+        ghost: ['bg-transparent', 'hover:bg-gray-50', 'text-purple-100'],
       },
       size: {
         small: ['text-sm'],

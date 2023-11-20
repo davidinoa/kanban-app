@@ -1,10 +1,9 @@
 import { Divider } from '@nextui-org/divider'
-import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/popover'
 import VerticalEllipsisIcon from '../assets/icon-vertical-ellipsis.svg'
 import LogoDark from '../assets/logo-dark.svg'
 import LogoMobile from '../assets/logo-mobile.svg'
 import Button from './button'
-import ThemeSwitch from './theme-switch'
+import NavPopover from './nav-popover'
 
 export default function Header() {
   return (
@@ -18,16 +17,7 @@ export default function Header() {
       <h1 className="hidden grow font-bold leading-tight sm:block sm:text-xl lg:text-2xl">
         Platform Launch
       </h1>
-      <Popover>
-        <PopoverTrigger>
-          <h1 className="text-md grow font-bold leading-tight">
-            Platform Launch
-          </h1>
-        </PopoverTrigger>
-        <PopoverContent className="w-[16.5rem] rounded-xl p-4 dark:bg-gray-300">
-          <ThemeSwitch />
-        </PopoverContent>
-      </Popover>
+      <NavPopover />
       <div className="flex items-center gap-1">
         <Button disabled size="large" className="hidden px-6 sm:inline-block">
           + Add New Task
