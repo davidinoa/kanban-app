@@ -1,9 +1,9 @@
-import LogoDark from '../assets/logo-dark.svg'
 import { Divider } from '@nextui-org/divider'
 import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/popover'
-import Button from './button'
 import VerticalEllipsisIcon from '../assets/icon-vertical-ellipsis.svg'
+import LogoDark from '../assets/logo-dark.svg'
 import LogoMobile from '../assets/logo-mobile.svg'
+import Button from './button'
 import ThemeSwitch from './theme-switch'
 
 export default function Header() {
