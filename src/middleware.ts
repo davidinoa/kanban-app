@@ -1,10 +1,8 @@
-import { withClerkMiddleware } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { withClerkMiddleware } from '@clerk/nextjs/server'
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export default withClerkMiddleware((_req: NextRequest) => {
-  return NextResponse.next();
-});
+export default withClerkMiddleware((_req: NextRequest) => NextResponse.next())
 
 // Stop Middleware running on static files
 export const config = {
@@ -16,7 +14,7 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    "/((?!static|.*\\..*|_next|favicon.ico).*)",
-    "/",
+    '/((?!static|.*\\..*|_next|favicon.ico).*)',
+    '/',
   ],
-};
+}

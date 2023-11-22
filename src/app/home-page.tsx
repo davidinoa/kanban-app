@@ -14,16 +14,14 @@ export default function HomePage() {
   // )
 
   return (
-    <>
-      <div className="flex flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="bg flex flex-col text-white">
-          {userData.isSignedIn ? (
-            <SignOutButton>Sign Out</SignOutButton>
-          ) : (
-            <SignInButton>Sign In</SignInButton>
-          )}
-        </div>
+    <div className="flex flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <div className="bg flex flex-col text-white">
+        {userData.isSignedIn ? (
+          <SignOutButton>Sign Out</SignOutButton>
+        ) : (
+          <SignInButton>Sign In</SignInButton>
+        )}
       </div>
-    </>
+    </div>
   )
 }

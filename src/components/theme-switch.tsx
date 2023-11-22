@@ -9,11 +9,11 @@ export default function ThemeSwitch() {
     <div className="dark:bg-gra flex h-12 w-full items-center justify-center gap-6 rounded-lg bg-gray-50 dark:bg-gray-400">
       <LightThemeIcon />
       <Switch
-        onChange={(e) => {
+        onChange={(e) =>
           e.target.checked
             ? document.documentElement.classList.add('dark')
             : document.documentElement.classList.remove('dark')
-        }}
+        }
         classNames={{
           thumb: 'w-4 h-4',
           wrapper:

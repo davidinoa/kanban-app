@@ -11,7 +11,7 @@ import { type NextRequest } from 'next/server'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 
-import { db } from '~/server/db'
+import db from '~/server/db'
 
 /**
  * 1. CONTEXT
@@ -35,12 +35,10 @@ interface CreateContextOptions {
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-export const createInnerTRPCContext = (opts: CreateContextOptions) => {
-  return {
-    headers: opts.headers,
-    db,
-  }
-}
+export const createInnerTRPCContext = (opts: CreateContextOptions) => ({
+  headers: opts.headers,
+  db,
+})
 
 /**
  * This is the actual context you will use in your router. It will be used to process every request
@@ -48,13 +46,12 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (opts: { req: NextRequest }) => {
+export const createTRPCContext = (opts: { req: NextRequest }) =>
   // Fetch stuff that depends on the request
 
-  return createInnerTRPCContext({
+  createInnerTRPCContext({
     headers: opts.req.headers,
   })
-}
 
 /**
  * 2. INITIALIZATION

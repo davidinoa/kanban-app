@@ -35,6 +35,7 @@ const config = {
       },
     ],
     'import/no-extraneous-dependencies': 'off',
+    'react/jsx-props-no-spreading': 'off',
   },
   ignorePatterns: ['next.config.mjs'],
 }
