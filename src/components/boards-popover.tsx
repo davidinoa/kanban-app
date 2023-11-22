@@ -9,15 +9,18 @@ import ChevronUpIcon from '~/assets/icon-chevron-up.svg'
 import NewBoardModal from './new-board-modal'
 import ThemeSwitch from './theme-switch'
 
+type Status = 'closed' | 'popoverOpen' | 'modalOpen'
+
 export default function BoardsPopover() {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [status, setStatus] = useState<Status>('closed')
+  const isPopoverOpen = status === 'popoverOpen'
+  const isModalOpen = status === 'modalOpen'
 
   return (
     <>
       <Popover
         isOpen={isPopoverOpen}
-        onOpenChange={setIsPopoverOpen}
+        onOpenChange={() => setStatus(isPopoverOpen ? 'closed' : 'popoverOpen')}
         offset={36}
         placement="bottom-start"
       >
@@ -57,10 +60,7 @@ export default function BoardsPopover() {
                     <Button
                       variant="ghost"
                       className="p-0 w-full justify-start rounded-none rounded-r-full gap-3 h-fit px-6 py-4 data-[focus-visible=true]:outline-0 focus-visible:ring-2 ring-inset ring-blue-600"
-                      onClick={() => {
-                        setIsPopoverOpen(false)
-                        setIsModalOpen(true)
-                      }}
+                      onClick={() => setStatus('modalOpen')}
                     >
                       <BoardIcon className="[&_path]:fill-purple-100" />+ Create
                       New Board
@@ -73,7 +73,12 @@ export default function BoardsPopover() {
           )}
         </PopoverContent>
       </Popover>
-      <NewBoardModal isOpen={isModalOpen} onOpenChange={setIsModalOpen} />
+      <NewBoardModal
+        isOpen={isModalOpen}
+        onOpenChange={(isOpen: boolean) =>
+          setStatus(isOpen ? 'modalOpen' : 'closed')
+        }
+      />
     </>
   )
 }
