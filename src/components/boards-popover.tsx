@@ -32,7 +32,7 @@ export default function BoardsPopover() {
             {isPopoverOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[16.5rem] rounded-lg p-4 dark:bg-gray-300 items-start">
+        <PopoverContent className="group w-[16.5rem] rounded-lg p-4 dark:bg-gray-300 items-start">
           {(titleProps) => (
             <>
               <nav className="w-full px-2 mb-4">
@@ -59,7 +59,7 @@ export default function BoardsPopover() {
                   <li>
                     <Button
                       variant="ghost"
-                      className="p-0 w-full justify-start rounded-none rounded-r-full gap-3 h-fit px-6 py-4 data-[focus-visible=true]:outline-0 focus-visible:ring-2 ring-inset ring-blue-600"
+                      className="p-0 w-full justify-start rounded-none rounded-r-full gap-3 h-fit px-6 py-4 data-[focus-visible=true]:outline-0 data-[focus-visible=true]:ring-2 ring-inset ring-blue-600"
                       onClick={() => setStatus('modalOpen')}
                     >
                       <BoardIcon className="[&_path]:fill-purple-100" />+ Create
