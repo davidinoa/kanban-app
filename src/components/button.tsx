@@ -52,10 +52,12 @@ export default function Button({
   size,
   children,
   className,
+  onClick,
   disabled = false,
 }: ButtonProps) {
   return (
     <NextUiButton
+      onClick={onClick}
       disabled={disabled}
       isIconOnly={variant === 'icon'}
       className={twMerge(buttonStyles({ variant, size }), className)}

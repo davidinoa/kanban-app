@@ -1,37 +1,33 @@
 'use client'
 
-import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/popover'
+import { Button } from '@nextui-org/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react'
 import { useState } from 'react'
 import BoardIcon from '~/assets/icon-board.svg'
 import ChevronDownIcon from '~/assets/icon-chevron-down.svg'
 import ChevronUpIcon from '~/assets/icon-chevron-up.svg'
-import Button from './button'
 import NewBoardModal from './new-board-modal'
 import ThemeSwitch from './theme-switch'
 
-export default function NavPopover() {
+export default function BoardsPopover() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
     <>
       <Popover
-        isOpen={isPopoverOpen && !isModalOpen}
-        onOpenChange={(isOpen) => {
-          setIsPopoverOpen(isOpen)
-          setIsModalOpen(false)
-        }}
-        // backdrop="opaque"
-        placement="bottom-start"
+        isOpen={isPopoverOpen}
+        onOpenChange={setIsPopoverOpen}
         offset={36}
+        placement="bottom-start"
       >
         <PopoverTrigger className="md:hidden mr-auto">
-          <button className="outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 dark:ring-offset-gray-300 flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-200 rounded transition-colors">
+          <Button className="flex items-center gap-2 p-2 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-200 rounded-lg transition-colors">
             <h1 className="text-lg font-bold leading-tight truncate">
               Platform Launch
             </h1>
             {isPopoverOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-          </button>
+          </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[16.5rem] rounded-lg p-4 dark:bg-gray-300 items-start">
           {(titleProps) => (
@@ -62,6 +58,7 @@ export default function NavPopover() {
                       variant="ghost"
                       className="p-0 w-full justify-start rounded-none rounded-r-full gap-3 h-fit px-6 py-4 data-[focus-visible=true]:outline-0 focus-visible:ring-2 ring-inset ring-blue-600"
                       onClick={() => {
+                        setIsPopoverOpen(false)
                         setIsModalOpen(true)
                       }}
                     >

@@ -4,8 +4,8 @@ import VerticalEllipsisIcon from '~/assets/icon-vertical-ellipsis.svg'
 import LogoDark from '~/assets/logo-dark.svg'
 import LogoLight from '~/assets/logo-light.svg'
 import LogoMobile from '~/assets/logo-mobile.svg'
+import BoardsPopover from './boards-popover'
 import Button from './button'
-import NavPopover from './nav-popover'
 
 export default function Header() {
   return (
@@ -26,7 +26,7 @@ export default function Header() {
       <h1 className="hidden grow font-bold leading-tight md:block md:text-xl lg:text-2xl">
         Platform Launch
       </h1>
-      <NavPopover />
+      <BoardsPopover />
       <div className="flex items-center gap-2 md:gap-4">
         <Button disabled size="large" className="hidden px-6 md:inline-block">
           + Add New Task
