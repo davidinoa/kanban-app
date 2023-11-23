@@ -6,15 +6,20 @@ import { useState } from 'react'
 import BoardIcon from '~/assets/icon-board.svg'
 import ChevronDownIcon from '~/assets/icon-chevron-down.svg'
 import ChevronUpIcon from '~/assets/icon-chevron-up.svg'
+import { api } from '~/utils/api'
 import NewBoardModal from './new-board-modal'
 import ThemeSwitch from './theme-switch'
 
 type Status = 'closed' | 'popoverOpen' | 'modalOpen'
 
 export default function BoardsPopover() {
+  const { data, isLoading, isError } = api.boards.getAllNames.useQuery()
   const [status, setStatus] = useState<Status>('closed')
   const isPopoverOpen = status === 'popoverOpen'
   const isModalOpen = status === 'modalOpen'
+
+  if (isLoading) return <div>Loading...</div>
+  if (isError) return <div>Something went wrong 😰</div>
 
   return (
     <>
@@ -40,20 +45,20 @@ export default function BoardsPopover() {
                   className="uppercase heading-sm text-left mb-4"
                   {...titleProps}
                 >
-                  All Boards (3)
+                  {`All Boards (${data.length})`}
                 </h2>
                 <ul className="text-sm leading-tight text-gray-100 p-0 font-bold -ml-6">
                   <li className="py-4 px-6 text-white bg-purple-100 rounded-r-full flex gap-3 items-center">
                     <BoardIcon className="[&_path]:fill-white" />
                     Test Board
                   </li>
-                  {['Platform Launch', 'Marketing Plan'].map((board) => (
+                  {data.map((board) => (
                     <li
-                      key={board}
+                      key={board.id}
                       className="py-4 px-6 flex gap-3 items-center"
                     >
                       <BoardIcon />
-                      {board}
+                      {board.name}
                     </li>
                   ))}
                   <li>
