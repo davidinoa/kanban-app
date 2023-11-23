@@ -38,6 +38,17 @@ const boardsRouter = createTRPCRouter({
 
       return board
     }),
+
+  create: privateProcedure
+    .input(z.object({ name: z.string() }))
+    .mutation(async ({ ctx, input }) =>
+      ctx.db.board.create({
+        data: {
+          name: input.name,
+          userId: ctx.userId,
+        },
+      }),
+    ),
 })
 
 export default boardsRouter

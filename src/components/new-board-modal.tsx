@@ -7,6 +7,7 @@ import {
 } from '@nextui-org/modal'
 import { useForm } from 'react-hook-form'
 import CrossIcon from '~/assets/icon-cross.svg'
+import { api } from '~/utils/api'
 import Button from './button'
 
 type NewBoardModalProps = {
@@ -18,9 +19,11 @@ export default function NewBoardModal({
   isOpen,
   onOpenChange,
 }: NewBoardModalProps) {
+  const apiUtils = api.useUtils()
+  const { mutate, isLoading } = api.boards.create.useMutation()
   const { register, handleSubmit, formState, reset } = useForm({
     defaultValues: {
-      boardName: '',
+      name: '',
     },
   })
 
@@ -44,9 +47,23 @@ export default function NewBoardModal({
               <form
                 id="new-board-form"
                 className="flex flex-col gap-6"
-                onSubmit={handleSubmit(() => {
-                  reset()
-                  onClose()
+                onSubmit={handleSubmit((data) => {
+                  mutate(
+                    {
+                      name: data.name,
+                    },
+                    {
+                      onSuccess: () => {
+                        apiUtils.boards.getAllNames
+                          .invalidate()
+                          .then(() => {
+                            reset()
+                            onClose()
+                          })
+                          .catch(console.error)
+                      },
+                    },
+                  )
                 })}
               >
                 <label className="flex flex-col gap-2">
@@ -54,7 +71,7 @@ export default function NewBoardModal({
                     Board Name
                   </span>
                   <input
-                    {...register('boardName', {
+                    {...register('name', {
                       required: true,
                     })}
                     type="text"
@@ -106,6 +123,7 @@ export default function NewBoardModal({
               <Button
                 type="submit"
                 form="new-board-form"
+                isLoading={isLoading}
                 disabled={!formState.isValid}
                 variant="primary"
                 className="w-full"
