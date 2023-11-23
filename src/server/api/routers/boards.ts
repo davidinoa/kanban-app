@@ -40,15 +40,38 @@ const boardsRouter = createTRPCRouter({
     }),
 
   create: privateProcedure
-    .input(z.object({ name: z.string() }))
-    .mutation(async ({ ctx, input }) =>
-      ctx.db.board.create({
-        data: {
-          name: input.name,
-          userId: ctx.userId,
-        },
+    .input(
+      z.object({
+        boardName: z.string(),
+        columns: z.array(
+          z.object({
+            columnName: z.string(),
+          }),
+        ),
       }),
-    ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { boardName, columns } = input
+      return ctx.db.$transaction(async (prisma) => {
+        const newBoard = await prisma.board.create({
+          data: {
+            name: boardName,
+            userId: ctx.userId,
+          },
+        })
+        await Promise.all(
+          columns.map((column) =>
+            prisma.column.create({
+              data: {
+                name: column.columnName,
+                boardId: newBoard.id,
+              },
+            }),
+          ),
+        )
+        return newBoard
+      })
+    }),
 })
 
 export default boardsRouter

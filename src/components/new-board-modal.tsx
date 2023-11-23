@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Modal,
   ModalBody,
@@ -5,10 +6,28 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@nextui-org/modal'
-import { useForm } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { z } from 'zod'
 import CrossIcon from '~/assets/icon-cross.svg'
 import { api } from '~/utils/api'
 import Button from './button'
+
+const maxNameLength = 255
+const nameTooLongMessage = `Name must be at most ${maxNameLength} characters long`
+
+const columnSchema = z.object({
+  columnName: z.string().max(maxNameLength, nameTooLongMessage).optional(),
+})
+
+const formSchema = z.object({
+  boardName: z
+    .string()
+    .min(1, 'Board name is required')
+    .max(maxNameLength, nameTooLongMessage),
+  columns: z.array(columnSchema),
+})
+
+type FormValues = z.infer<typeof formSchema>
 
 type NewBoardModalProps = {
   isOpen: boolean
@@ -21,10 +40,23 @@ export default function NewBoardModal({
 }: NewBoardModalProps) {
   const apiUtils = api.useUtils()
   const { mutate, isLoading } = api.boards.create.useMutation()
-  const { register, handleSubmit, formState, reset } = useForm({
-    defaultValues: {
-      name: '',
-    },
+
+  const { register, handleSubmit, formState, reset, control } =
+    useForm<FormValues>({
+      resolver: zodResolver(formSchema),
+      defaultValues: {
+        boardName: '',
+        columns: [{ columnName: '' }],
+      },
+    })
+
+  const {
+    fields: columnFields,
+    append,
+    remove,
+  } = useFieldArray({
+    name: 'columns',
+    control,
   })
 
   return (
@@ -50,7 +82,11 @@ export default function NewBoardModal({
                 onSubmit={handleSubmit((data) => {
                   mutate(
                     {
-                      name: data.name,
+                      boardName: data.boardName,
+                      columns: data.columns.filter(
+                        (column): column is { columnName: string } =>
+                          Boolean(column.columnName),
+                      ),
                     },
                     {
                       onSuccess: () => {
@@ -60,7 +96,7 @@ export default function NewBoardModal({
                             reset()
                             onClose()
                           })
-                          .catch(console.error)
+                          .catch(() => undefined)
                       },
                     },
                   )
@@ -71,7 +107,7 @@ export default function NewBoardModal({
                     Board Name
                   </span>
                   <input
-                    {...register('name', {
+                    {...register('boardName', {
                       required: true,
                     })}
                     type="text"
@@ -83,37 +119,31 @@ export default function NewBoardModal({
                   <legend className="mb-2 font-bold text-gray-100 text-sm">
                     Board Columns
                   </legend>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="text"
-                      placeholder="e.g. Todo"
-                      className="rounded grow border border-gray-100/25 placeholder:text-gray-100/50 py-2 px-4"
-                    />
-                    <Button
-                      variant="icon"
-                      tabIndex={-1}
-                      aria-label="delete column"
-                      className="px-2 py-2 h-fit -mr-2"
-                    >
-                      <CrossIcon />
-                    </Button>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="text"
-                      placeholder="e.g. Todo"
-                      className="grow border border-gray-100/25 rounded placeholder:text-gray-100/50 py-2 px-4"
-                    />
-                    <Button
-                      variant="icon"
-                      tabIndex={-1}
-                      aria-label="delete column"
-                      className="px-2 py-2 h-fit -mr-2"
-                    >
-                      <CrossIcon />
-                    </Button>
-                  </div>
-                  <Button variant="secondary" className="w-full">
+                  {columnFields.map((field, index) => (
+                    <div key={field.id} className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        placeholder="e.g. Todo"
+                        className="rounded grow border border-gray-100/25 placeholder:text-gray-100/50 py-2 px-4"
+                        {...register(`columns.${index}.columnName`)}
+                      />
+                      <Button
+                        variant="icon"
+                        tabIndex={-1}
+                        aria-label="delete column"
+                        className="px-2 py-2 h-fit -mr-2"
+                        disabled={columnFields.length === 1}
+                        onClick={() => remove(index)}
+                      >
+                        <CrossIcon />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => append({ columnName: '' })}
+                  >
                     + Add New Column
                   </Button>
                 </fieldset>
