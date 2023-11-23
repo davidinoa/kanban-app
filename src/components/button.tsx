@@ -13,17 +13,16 @@ const buttonStyles = cva(
     'min-w-fit',
     'w-fit',
     'h-auto',
-    'py-0',
-    'px-0',
+    'px-4',
   ],
   {
     variants: {
       variant: {
         primary: ['bg-purple-100', 'hover:bg-purple-50', 'text-white'],
         secondary: [
-          'bg-purple-100',
-          'bg-opacity-10',
-          'hover:bg-opacity-25',
+          'bg-purple-100/10',
+          'hover:bg-purple-100/25',
+          'data-[hover=true]:opacity-100',
           'text-purple-100',
           'dark:bg-white',
           'dark:hover:bg-gray-50',
@@ -34,7 +33,7 @@ const buttonStyles = cva(
         ghost: ['bg-transparent', 'hover:bg-gray-50', 'dark:hover:bg-gray-200'],
       },
       size: {
-        small: ['text-sm', 'py-2'],
+        small: ['text-sm', 'py-2.5'],
         large: ['text-base', 'py-3'],
       },
     },
@@ -54,9 +53,11 @@ export default function Button({
   className,
   onClick,
   disabled = false,
+  tabIndex,
 }: ButtonProps) {
   return (
     <NextUiButton
+      tabIndex={tabIndex}
       onClick={onClick}
       disabled={disabled}
       isIconOnly={variant === 'icon'}

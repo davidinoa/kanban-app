@@ -35,6 +35,13 @@ const config = {
       },
     ],
     'import/no-extraneous-dependencies': 'off',
+    'jsx-a11y/label-has-associated-control': [
+      'error',
+      {
+        assert: 'either',
+        depth: 3,
+      },
+    ],
     'react/jsx-props-no-spreading': 'off',
   },
   ignorePatterns: ['next.config.mjs'],
