@@ -5,6 +5,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@nextui-org/modal'
+import { useForm } from 'react-hook-form'
 import CrossIcon from '~/assets/icon-cross.svg'
 import Button from './button'
 
@@ -17,15 +18,21 @@ export default function NewBoardModal({
   isOpen,
   onOpenChange,
 }: NewBoardModalProps) {
+  const { register, handleSubmit, formState, reset } = useForm({
+    defaultValues: {
+      boardName: '',
+    },
+  })
+
   return (
     <Modal
+      placement="center"
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
       classNames={{
         wrapper: 'p-4',
         base: 'max-w-[30rem] max-h-[90vh]',
       }}
-      placement="center"
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
     >
       <ModalContent>
         {(onClose) => (
@@ -34,12 +41,22 @@ export default function NewBoardModal({
               Add New Board
             </ModalHeader>
             <ModalBody>
-              <form className="flex flex-col gap-6">
+              <form
+                id="new-board-form"
+                className="flex flex-col gap-6"
+                onSubmit={handleSubmit(() => {
+                  reset()
+                  onClose()
+                })}
+              >
                 <label className="flex flex-col gap-2">
                   <span className="font-bold text-gray-100 text-sm">
                     Board Name
                   </span>
                   <input
+                    {...register('boardName', {
+                      required: true,
+                    })}
                     type="text"
                     placeholder="e.g. Web Design"
                     className="border border-gray-100/25 rounded-sm placeholder:text-gray-100/50 py-2 px-4"
@@ -86,7 +103,13 @@ export default function NewBoardModal({
               </form>
             </ModalBody>
             <ModalFooter className="flex flex-col pb-8">
-              <Button variant="primary" className="w-full" onClick={onClose}>
+              <Button
+                type="submit"
+                form="new-board-form"
+                disabled={!formState.isValid}
+                variant="primary"
+                className="w-full"
+              >
                 Create New Board
               </Button>
             </ModalFooter>
