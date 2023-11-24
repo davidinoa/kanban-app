@@ -1,7 +1,8 @@
 'use client'
 
 import { Button } from '@nextui-org/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react'
+import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/popover'
+import { ScrollShadow } from '@nextui-org/scroll-shadow'
 import { useState } from 'react'
 import BoardIcon from '~/assets/icon-board.svg'
 import ChevronDownIcon from '~/assets/icon-chevron-down.svg'
@@ -29,42 +30,42 @@ export default function BoardsPopover() {
         offset={36}
         placement="bottom-start"
       >
-        <PopoverTrigger className="md:hidden mr-auto">
-          <Button className="flex items-center gap-2 p-2 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-200 rounded-lg transition-colors">
-            <h1 className="text-lg font-bold leading-tight truncate">
+        <PopoverTrigger className="mr-auto md:hidden">
+          <Button className="flex items-center gap-2 rounded-lg bg-transparent p-2 transition-colors hover:bg-gray-50 dark:hover:bg-gray-200">
+            <h1 className="truncate text-lg font-bold leading-tight">
               Platform Launch
             </h1>
             {isPopoverOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="group w-[16.5rem] rounded-lg p-4 dark:bg-gray-300 items-start">
+        <PopoverContent className="group w-[16.5rem] items-start rounded-lg p-4 dark:bg-gray-300">
           {(titleProps) => (
             <>
-              <nav className="w-full px-2 mb-4">
+              <nav className="mb-4 w-full px-2">
                 <h2
-                  className="uppercase heading-sm text-left mb-4"
+                  className="mb-4 text-left uppercase heading-sm"
                   {...titleProps}
                 >
                   {`All Boards (${data.length})`}
                 </h2>
-                <ul className="text-sm leading-tight text-gray-100 p-0 font-bold -ml-6">
-                  <li className="py-4 px-6 text-white bg-purple-100 rounded-r-full flex gap-3 items-center">
-                    <BoardIcon className="[&_path]:fill-white" />
-                    Test Board
-                  </li>
-                  {data.map((board) => (
-                    <li
-                      key={board.id}
-                      className="py-4 px-6 flex gap-3 items-center"
-                    >
-                      <BoardIcon />
-                      {board.name}
-                    </li>
-                  ))}
+                <ul className="-ml-6 p-0 text-sm font-bold leading-tight text-gray-100">
+                  <ScrollShadow className="h-[20vh]" size={50}>
+                    {data.map((board) => (
+                      <li key={board.id}>
+                        <a
+                          href="/"
+                          className="flex items-center gap-3 px-6 py-4"
+                        >
+                          <BoardIcon />
+                          {board.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ScrollShadow>
                   <li>
                     <Button
                       variant="ghost"
-                      className="p-0 w-full justify-start rounded-none rounded-r-full gap-3 h-fit px-6 py-4 data-[focus-visible=true]:outline-0 data-[focus-visible=true]:ring-2 ring-inset ring-blue-600"
+                      className="h-fit w-full justify-start gap-3 rounded-none rounded-r-full p-0 px-6 py-4 ring-inset ring-blue-600 data-[focus-visible=true]:outline-0 data-[focus-visible=true]:ring-2"
                       onClick={() => setStatus('modalOpen')}
                     >
                       <BoardIcon className="[&_path]:fill-purple-100" />+ Create

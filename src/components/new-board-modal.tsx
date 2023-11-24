@@ -167,3 +167,10 @@ export default function NewBoardModal({
     </Modal>
   )
 }
+
+/**
+ * TODOS:
+ * - Display errors to the users
+ * - Limit input length
+ * - Set a max height for the modal content
+ */

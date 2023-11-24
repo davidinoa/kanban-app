@@ -2,7 +2,6 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { type ComponentProps } from 'react'
-import { twMerge } from 'tailwind-merge'
 import BoardIcon from '~/assets/icon-board.svg'
 import { api } from '~/utils/api'
 import Button from './button'
@@ -22,7 +21,7 @@ export default function BoardsNav({
   if (!data) return null
 
   return (
-    <nav className={twMerge(['md:pr-5 lg:pr-6', className])} {...props}>
+    <nav className={className} {...props}>
       <h2 className="mb-4 px-6 text-left uppercase heading-sm md:mb-5">
         {`All Boards (${data.length})`}
       </h2>
@@ -34,16 +33,12 @@ export default function BoardsNav({
               <Link
                 href="#"
                 className={`lg: group flex items-center gap-3 rounded-r-full px-6 py-4 hover:bg-purple-100/10 hover:text-purple-100 focus-visible:bg-purple-100/10 focus-visible:text-purple-100 lg:px-8 ${
-                  isLinkActive
-                    ? 'bg-purple-100 text-white'
-                    : ''
+                  isLinkActive ? 'bg-purple-100 text-white' : ''
                 }`}
               >
                 <BoardIcon
                   className={`group-hover:[&_path]:fill-purple-100 group-focus-visible:[&_path]:fill-purple-100 ${
-                    isLinkActive
-                      ? '[&_path]:fill-white'
-                      : ''
+                    isLinkActive ? '[&_path]:fill-white' : ''
                   }`}
                 />
                 <span className="truncate">{board.name}</span>

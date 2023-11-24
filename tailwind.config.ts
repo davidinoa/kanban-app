@@ -37,7 +37,7 @@ export default {
   darkMode: 'class',
   plugins: [
     nextui(),
-    plugin(function ({ addUtilities }) {
+    plugin(({ addUtilities }) => {
       addUtilities({
         '.heading-sm': {
           fontWeight: '700',
