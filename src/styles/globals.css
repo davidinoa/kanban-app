@@ -30,3 +30,23 @@ aside {
 main {
   grid-area: main;
 }
+
+* {
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  @apply h-2 w-2 bg-transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply h-2 w-2 rounded-full bg-gray-100;
+}
+
+.scrollbar-hidden::-webkit-scrollbar-thumb {
+  @apply bg-transparent;
+}
+
+.scrollbar-hidden:hover::-webkit-scrollbar-thumb {
+  @apply bg-gray-100;
+}
