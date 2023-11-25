@@ -1,4 +1,5 @@
 import { nextui } from '@nextui-org/react'
+import containerQueries from '@tailwindcss/container-queries'
 import { type Config } from 'tailwindcss'
 import { fontFamily } from 'tailwindcss/defaultTheme'
 import plugin from 'tailwindcss/plugin'
@@ -36,7 +37,16 @@ export default {
   },
   darkMode: 'class',
   plugins: [
-    nextui(),
+    containerQueries,
+    nextui({
+      themes: {
+        dark: {
+          colors: {
+            content1: '#2b2c37',
+          },
+        },
+      },
+    }),
     plugin(({ addUtilities }) => {
       addUtilities({
         '.heading-sm': {
@@ -45,6 +55,12 @@ export default {
           lineHeight: '1.25',
           letterSpacing: '2.4px',
           color: '#828fa3',
+        },
+        '.heading-md': {
+          fontWeight: '700',
+          fontSize: '1.125rem',
+          lineHeight: '1.25',
+          color: '#000112',
         },
       })
     }),

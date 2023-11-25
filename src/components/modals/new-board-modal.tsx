@@ -10,7 +10,7 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import CrossIcon from '~/assets/icon-cross.svg'
 import { api } from '~/utils/api'
-import Button from './button'
+import Button from '../button'
 
 const maxNameLength = 255
 const nameTooLongMessage = `Name must be at most ${maxNameLength} characters long`
@@ -103,7 +103,7 @@ export default function NewBoardModal({
                 })}
               >
                 <label className="flex flex-col gap-2">
-                  <span className="font-bold text-gray-100 text-sm">
+                  <span className="text-sm font-bold text-gray-100">
                     Board Name
                   </span>
                   <input
@@ -112,26 +112,26 @@ export default function NewBoardModal({
                     })}
                     type="text"
                     placeholder="e.g. Web Design"
-                    className="border border-gray-100/25 rounded-sm placeholder:text-gray-100/50 py-2 px-4"
+                    className="rounded-sm border border-gray-100/25 px-4 py-2 placeholder:text-gray-100/50"
                   />
                 </label>
                 <fieldset className="flex flex-col gap-2">
-                  <legend className="mb-2 font-bold text-gray-100 text-sm">
+                  <legend className="mb-2 text-sm font-bold text-gray-100">
                     Board Columns
                   </legend>
                   {columnFields.map((field, index) => (
-                    <div key={field.id} className="flex gap-2 items-center">
+                    <div key={field.id} className="flex items-center gap-2">
                       <input
                         type="text"
                         placeholder="e.g. Todo"
-                        className="rounded grow border border-gray-100/25 placeholder:text-gray-100/50 py-2 px-4"
+                        className="grow rounded border border-gray-100/25 px-4 py-2 placeholder:text-gray-100/50"
                         {...register(`columns.${index}.columnName`)}
                       />
                       <Button
                         variant="icon"
                         tabIndex={-1}
                         aria-label="delete column"
-                        className="px-2 py-2 h-fit -mr-2"
+                        className="-mr-2 h-fit px-2 py-2"
                         disabled={columnFields.length === 1}
                         onClick={() => remove(index)}
                       >

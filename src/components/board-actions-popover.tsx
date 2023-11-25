@@ -1,37 +1,72 @@
-import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/popover'
+'use client'
+
+import {
+  Button as NextUiButton,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@nextui-org/react'
+import { useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 import VerticalEllipsisIcon from '~/assets/icon-vertical-ellipsis.svg'
-import Button from './button'
+import Button, { buttonStyles } from './button'
+import DeleteBoardModal from './modals/delete-board-modal'
+
+type Status = 'closed' | 'popoverOpen' | 'editModalOpen' | 'deleteModalOpen'
 
 export default function BoardActionsPopover() {
+  const [status, setStatus] = useState<Status>('closed')
+  const isPopoverOpen = status === 'popoverOpen'
+  const isDeleteModalOpen = status === 'deleteModalOpen'
+
   return (
-    <Popover placement="bottom-end">
-      <PopoverTrigger>
-        <Button variant="icon" aria-label="board actions" className="p-2">
-          <VerticalEllipsisIcon
-            height={16}
-            viewBox="0 0 5 20"
-            className="md:hidden"
-          />
-          <VerticalEllipsisIcon
-            viewBox="0 0 5 20"
-            className="hidden md:block"
-          />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="flex w-48 flex-col items-start gap-1 overflow-hidden rounded-lg p-0 py-2 pr-6">
-        <Button
-          variant="ghost"
-          className="w-full justify-start rounded-l-none rounded-r-full px-4 py-3 text-gray-100 hover:bg-purple-100/10 hover:text-purple-100 focus-visible:bg-purple-100/10 focus-visible:text-purple-100 "
-        >
-          Edit Board
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full justify-start rounded-l-none rounded-r-full px-4 text-red-100 hover:bg-red-100 hover:text-white focus-visible:bg-red-100 focus-visible:text-white"
-        >
-          Delete Board
-        </Button>
-      </PopoverContent>
-    </Popover>
+    <>
+      <Popover
+        placement="bottom"
+        offset={28}
+        isOpen={isPopoverOpen}
+        onOpenChange={(isOpen) => setStatus(isOpen ? 'popoverOpen' : 'closed')}
+      >
+        <PopoverTrigger>
+          <NextUiButton
+            isIconOnly
+            aria-label="board actions"
+            className={twMerge(buttonStyles({ variant: 'icon' }), 'p-2')}
+          >
+            <VerticalEllipsisIcon
+              height={16}
+              viewBox="0 0 5 20"
+              className="md:hidden"
+            />
+            <VerticalEllipsisIcon
+              viewBox="0 0 5 20"
+              className="hidden md:block"
+            />
+          </NextUiButton>
+        </PopoverTrigger>
+        <PopoverContent className="flex w-48 flex-col items-start gap-1 overflow-hidden rounded-lg p-0 py-2 pr-6">
+          <Button
+            variant="ghost"
+            className="w-full justify-start rounded-l-none rounded-r-full px-4 py-3 text-gray-100 data-[focus-visible=true]:bg-purple-100/10 data-[hover=true]:bg-purple-100/10 data-[focus-visible=true]:text-purple-100 data-[hover=true]:text-purple-100"
+          >
+            Edit Board
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start rounded-l-none rounded-r-full px-4 text-red-100 data-[focus-visible=true]:bg-red-100 data-[hover=true]:bg-red-100 data-[focus-visible=true]:text-white data-[hover=true]:text-white"
+            onClick={() => setStatus('deleteModalOpen')}
+          >
+            Delete Board
+          </Button>
+        </PopoverContent>
+      </Popover>
+      <DeleteBoardModal
+        isOpen={isDeleteModalOpen}
+        onOpenChange={(isOpen) =>
+          setStatus(isOpen ? 'deleteModalOpen' : 'closed')
+        }
+      />
+      <div />
+    </>
   )
 }

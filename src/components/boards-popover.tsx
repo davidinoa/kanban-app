@@ -8,7 +8,7 @@ import BoardIcon from '~/assets/icon-board.svg'
 import ChevronDownIcon from '~/assets/icon-chevron-down.svg'
 import ChevronUpIcon from '~/assets/icon-chevron-up.svg'
 import { api } from '~/utils/api'
-import NewBoardModal from './new-board-modal'
+import NewBoardModal from './modals/new-board-modal'
 import ThemeSwitch from './theme-switch'
 
 type Status = 'closed' | 'popoverOpen' | 'modalOpen'

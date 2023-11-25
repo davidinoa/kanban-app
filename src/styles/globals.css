@@ -43,6 +43,10 @@ main {
   @apply h-2 w-2 rounded-full bg-gray-100;
 }
 
+*::-webkit-scrollbar-corner {
+  @apply h-2 w-2 bg-transparent;
+}
+
 .scrollbar-hidden::-webkit-scrollbar-thumb {
   @apply bg-transparent;
 }

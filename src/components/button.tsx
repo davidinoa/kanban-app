@@ -5,7 +5,7 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority'
 import { twMerge } from 'tailwind-merge'
 
-const buttonStyles = cva(
+export const buttonStyles = cva(
   [
     'transition-colors',
     'font-bold',
@@ -18,6 +18,7 @@ const buttonStyles = cva(
     'w-fit',
     'h-auto',
     'px-4',
+    'leading-none',
   ],
   {
     variants: {
@@ -88,3 +89,8 @@ export default function Button({
     </NextUiButton>
   )
 }
+
+/**
+ * Todos:
+ * [ ] Investigate what opacity value is being applied on hover
+ */
