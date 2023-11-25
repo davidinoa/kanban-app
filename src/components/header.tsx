@@ -5,19 +5,20 @@ import AddTaskIcon from '~/assets/icon-add-task-mobile.svg'
 import LogoDark from '~/assets/logo-dark.svg'
 import LogoLight from '~/assets/logo-light.svg'
 import LogoMobile from '~/assets/logo-mobile.svg'
-import useLayoutStore from '~/zustand/layout-store'
+import useAppStore from '~/zustand/app-store'
 import BoardActionsPopover from './board-actions-popover'
 import BoardsPopover from './boards-popover'
 import Button from './button'
 
 export default function Header() {
-  const isSidebarOpen = useLayoutStore((state) => state.isSidebarOpen)
+  const isSidebarOpen = useAppStore((state) => state.isSidebarOpen)
 
   return (
     <header className="flex h-16 min-w-fit items-center gap-2 border-b-1 border-sky px-4 pr-2 dark:border-gray-200 dark:bg-gray-300 md:h-20 md:gap-6 md:px-6 md:pr-4 lg:h-24 lg:gap-8">
       {!isSidebarOpen && (
         <>
           <LogoDark
+            suppressHydrationWarning
             aria-label="App logo"
             className="hidden md:inline-block md:dark:hidden"
           />

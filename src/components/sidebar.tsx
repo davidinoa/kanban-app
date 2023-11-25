@@ -1,22 +1,24 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import HideSidebarIcon from '~/assets/icon-hide-sidebar.svg'
 import ShowSidebarIcon from '~/assets/icon-show-sidebar.svg'
 import LogoDark from '~/assets/logo-dark.svg'
 import LogoLight from '~/assets/logo-light.svg'
 import { api } from '~/utils/api'
-import useLayoutStore from '~/zustand/layout-store'
+import useAppStore from '~/zustand/app-store'
 import BoardsNav from './boards-nav'
 import Button from './button'
-import NewBoardModal from './new-board-modal'
+import NewBoardModal from './modals/new-board-modal'
 import ThemeSwitch from './theme-switch'
 
 export default function Sidebar() {
-  const { isSidebarOpen, setIsSidebarOpen } = useLayoutStore()
+  const { isSidebarOpen, setIsSidebarOpen } = useAppStore()
   const { data } = api.boards.getAllNames.useQuery()
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const initialOpenState = useRef(isSidebarOpen ? 'open' : 'closed')
 
   const sidebarVariants = {
     open: { width: 'auto' },
@@ -28,7 +30,7 @@ export default function Sidebar() {
   return (
     <>
       <motion.aside
-        initial="closed"
+        initial={initialOpenState.current}
         animate={isSidebarOpen ? 'open' : 'closed'}
         variants={sidebarVariants}
         className="overflow-auto dark:bg-gray-300"
