@@ -2,11 +2,11 @@
 
 import { Divider } from '@nextui-org/divider'
 import AddTaskIcon from '~/assets/icon-add-task-mobile.svg'
-import VerticalEllipsisIcon from '~/assets/icon-vertical-ellipsis.svg'
 import LogoDark from '~/assets/logo-dark.svg'
 import LogoLight from '~/assets/logo-light.svg'
 import LogoMobile from '~/assets/logo-mobile.svg'
 import useLayoutStore from '~/zustand/layout-store'
+import BoardActionsPopover from './board-actions-popover'
 import BoardsPopover from './boards-popover'
 import Button from './button'
 
@@ -43,17 +43,7 @@ export default function Header() {
         <Button className="px-5 py-2.5 md:hidden">
           <AddTaskIcon />
         </Button>
-        <Button variant="icon" aria-label="Board options" className="p-2">
-          <VerticalEllipsisIcon
-            height={16}
-            viewBox="0 0 5 20"
-            className="md:hidden"
-          />
-          <VerticalEllipsisIcon
-            viewBox="0 0 5 20"
-            className="hidden md:block"
-          />
-        </Button>
+        <BoardActionsPopover />
       </div>
     </header>
   )

@@ -19,7 +19,7 @@ export default function HomePage() {
 
   if (!userIsLoaded) {
     return (
-      <div className="h-full w-full grid place-items-centers">
+      <div className="place-items-centers grid h-full w-full">
         <Spinner
           classNames={{
             circle1: 'border-b-purple-100',
@@ -31,7 +31,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="bg flex flex-col text-white">
+    <div className="flex flex-col text-white">
       {isSignedIn ? (
         <SignOutButton>Sign Out</SignOutButton>
       ) : (
