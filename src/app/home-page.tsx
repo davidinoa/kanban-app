@@ -2,7 +2,9 @@
 
 import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs'
 import { Spinner } from '@nextui-org/spinner'
+import { useEffect } from 'react'
 import { api } from '~/utils/api'
+import useAppStore from '~/zustand/app-store'
 
 export default function HomePage() {
   const { isSignedIn, isLoaded: userIsLoaded } = useUser()
@@ -15,7 +17,13 @@ export default function HomePage() {
     { enabled: Boolean(defaultBoardId) },
   )
 
-  console.info(currentBoardQuery.data)
+  const setCurrentBoard = useAppStore((state) => state.setCurrentBoard)
+
+  useEffect(() => {
+    if (currentBoardQuery.data) {
+      setCurrentBoard(currentBoardQuery.data)
+    }
+  }, [currentBoardQuery.data, setCurrentBoard])
 
   if (!userIsLoaded) {
     return (

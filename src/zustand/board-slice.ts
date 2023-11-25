@@ -1,13 +1,16 @@
 import { type StateCreator } from 'zustand'
+import { type RouterOutputs } from '~/trpc/shared'
+
+type Board = RouterOutputs['boards']['getById']
 
 export type BoardSlice = {
-  currentBoardId?: number
-  setCurrentBoardId: (id: number) => void
+  currentBoard?: Board
+  setCurrentBoard: (currentBoard: Board) => void
 }
 
 export const createBoardSlice: StateCreator<BoardSlice, [], [], BoardSlice> = (
   set,
 ) => ({
-  currentBoardId: undefined,
-  setCurrentBoardId: (currentBoardId) => set({ currentBoardId }),
+  currentBoard: undefined,
+  setCurrentBoard: (currentBoard) => set({ currentBoard }),
 })
