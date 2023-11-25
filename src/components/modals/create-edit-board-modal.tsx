@@ -10,6 +10,7 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import CrossIcon from '~/assets/icon-cross.svg'
 import { api } from '~/utils/api'
+import useAppStore from '~/zustand/app-store'
 import Button from '../button'
 
 const maxNameLength = 255
@@ -30,24 +31,38 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>
 
 type NewBoardModalProps = {
+  mode: 'create' | 'edit'
   isOpen: boolean
   onOpenChange: (isOpen: boolean) => void
 }
 
-export default function NewBoardModal({
+export default function CreateEditBoardModal({
+  mode,
   isOpen,
   onOpenChange,
 }: NewBoardModalProps) {
   const apiUtils = api.useUtils()
   const { mutate, isLoading } = api.boards.create.useMutation()
 
+  const isCreating = mode === 'create'
+  const board = useAppStore((state) => state.currentBoard)
+
   const { register, handleSubmit, formState, reset, control } =
     useForm<FormValues>({
       resolver: zodResolver(formSchema),
-      defaultValues: {
-        boardName: '',
-        columns: [{ columnName: '' }],
-      },
+      defaultValues: isCreating
+        ? {
+            boardName: '',
+            columns: [{ columnName: '' }],
+          }
+        : {
+            boardName: board?.name ?? '',
+            columns: board?.columns.length
+              ? board.columns.map((column) => ({
+                  columnName: column.name,
+                }))
+              : [{ columnName: '' }],
+          },
     })
 
   const {
@@ -61,23 +76,25 @@ export default function NewBoardModal({
 
   return (
     <Modal
+      scrollBehavior="inside"
       placement="center"
       isOpen={isOpen}
       onOpenChange={onOpenChange}
+      onClose={reset}
       classNames={{
         wrapper: 'p-4',
-        base: 'max-w-[30rem] max-h-[90vh]',
+        base: 'max-w-[30rem] max-h-[70vh]',
       }}
     >
       <ModalContent>
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1 pt-6">
-              Add New Board
+              {isCreating ? 'Add New Board' : 'Edit Board'}
             </ModalHeader>
             <ModalBody>
               <form
-                id="new-board-form"
+                id="create-edit-board-form"
                 className="flex flex-col gap-6"
                 onSubmit={handleSubmit((data) => {
                   mutate(
@@ -124,7 +141,7 @@ export default function NewBoardModal({
                       <input
                         type="text"
                         placeholder="e.g. Todo"
-                        className="grow rounded border border-gray-100/25 px-4 py-2 placeholder:text-gray-100/50"
+                        className="grow rounded border border-gray-100/25 px-4 py-2 placeholder:text-gray-100/50 disabled:cursor-not-allowed"
                         {...register(`columns.${index}.columnName`)}
                       />
                       <Button
@@ -152,13 +169,13 @@ export default function NewBoardModal({
             <ModalFooter className="flex flex-col pb-8">
               <Button
                 type="submit"
-                form="new-board-form"
+                form="create-edit-board-form"
                 isLoading={isLoading}
-                disabled={!formState.isValid}
+                disabled={!(formState.isValid && formState.isDirty)}
                 variant="primary"
                 className="w-full"
               >
-                Create New Board
+                {isCreating ? 'Create New Board' : 'Save Changes'}
               </Button>
             </ModalFooter>
           </>
@@ -171,6 +188,5 @@ export default function NewBoardModal({
 /**
  * TODOS:
  * - Display errors to the users
- * - Limit input length
- * - Set a max height for the modal content
+ * - Disable input after reaching limit
  */

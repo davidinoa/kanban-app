@@ -8,7 +8,7 @@ import BoardIcon from '~/assets/icon-board.svg'
 import ChevronDownIcon from '~/assets/icon-chevron-down.svg'
 import ChevronUpIcon from '~/assets/icon-chevron-up.svg'
 import { api } from '~/utils/api'
-import NewBoardModal from './modals/new-board-modal'
+import CreateEditBoardModal from './modals/create-edit-board-modal'
 import ThemeSwitch from './theme-switch'
 
 type Status = 'closed' | 'popoverOpen' | 'modalOpen'
@@ -79,7 +79,8 @@ export default function BoardsPopover() {
           )}
         </PopoverContent>
       </Popover>
-      <NewBoardModal
+      <CreateEditBoardModal
+        mode="create"
         isOpen={isModalOpen}
         onOpenChange={(isOpen: boolean) =>
           setStatus(isOpen ? 'modalOpen' : 'closed')

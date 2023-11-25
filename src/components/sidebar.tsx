@@ -10,7 +10,7 @@ import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
 import BoardsNav from './boards-nav'
 import Button from './button'
-import NewBoardModal from './modals/new-board-modal'
+import NewBoardModal from './modals/create-edit-board-modal'
 import ThemeSwitch from './theme-switch'
 
 export default function Sidebar() {

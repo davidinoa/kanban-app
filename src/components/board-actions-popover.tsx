@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import VerticalEllipsisIcon from '~/assets/icon-vertical-ellipsis.svg'
 import Button, { buttonStyles } from './button'
+import CreateEditBoardModal from './modals/create-edit-board-modal'
 import DeleteBoardModal from './modals/delete-board-modal'
 
 type Status = 'closed' | 'popoverOpen' | 'editModalOpen' | 'deleteModalOpen'
@@ -17,6 +18,7 @@ type Status = 'closed' | 'popoverOpen' | 'editModalOpen' | 'deleteModalOpen'
 export default function BoardActionsPopover() {
   const [status, setStatus] = useState<Status>('closed')
   const isPopoverOpen = status === 'popoverOpen'
+  const isEditModalOpen = status === 'editModalOpen'
   const isDeleteModalOpen = status === 'deleteModalOpen'
 
   return (
@@ -48,6 +50,7 @@ export default function BoardActionsPopover() {
           <Button
             variant="ghost"
             className="w-full justify-start rounded-l-none rounded-r-full px-4 py-3 text-gray-100 data-[focus-visible=true]:bg-purple-100/10 data-[hover=true]:bg-purple-100/10 data-[focus-visible=true]:text-purple-100 data-[hover=true]:text-purple-100"
+            onClick={() => setStatus('editModalOpen')}
           >
             Edit Board
           </Button>
@@ -60,13 +63,19 @@ export default function BoardActionsPopover() {
           </Button>
         </PopoverContent>
       </Popover>
+      <CreateEditBoardModal
+        mode="edit"
+        isOpen={isEditModalOpen}
+        onOpenChange={(isOpen) =>
+          setStatus(isOpen ? 'editModalOpen' : 'closed')
+        }
+      />
       <DeleteBoardModal
         isOpen={isDeleteModalOpen}
         onOpenChange={(isOpen) =>
           setStatus(isOpen ? 'deleteModalOpen' : 'closed')
         }
       />
-      <div />
     </>
   )
 }
