@@ -5,6 +5,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@nextui-org/modal'
+import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
 import Button from '../button'
 
@@ -18,6 +19,8 @@ export default function DeleteBoardModal({
   onOpenChange,
 }: DeleteBoardModalProps) {
   const board = useAppStore((state) => state.currentBoard)
+  const { mutate, isLoading } = api.boards.delete.useMutation()
+  const apiUtils = api.useUtils()
 
   if (!board) return null
 
@@ -25,6 +28,7 @@ export default function DeleteBoardModal({
     <Modal
       isOpen={isOpen}
       onOpenChange={onOpenChange}
+      isDismissable={!isLoading}
       placement="center"
       classNames={{ wrapper: 'p-4' }}
     >
@@ -44,10 +48,32 @@ export default function DeleteBoardModal({
               </p>
             </ModalBody>
             <ModalFooter className="@[20rem]:flex-row flex flex-col gap-4 p-0">
-              <Button variant="danger" type="submit" className="w-full">
+              <Button
+                variant="danger"
+                className="w-full"
+                isLoading={isLoading}
+                onClick={() => {
+                  mutate(
+                    { id: board.id },
+                    {
+                      onSuccess: () => {
+                        apiUtils.boards.getAllNames
+                          .invalidate()
+                          .then(() => onClose())
+                          .catch(() => undefined)
+                      },
+                    },
+                  )
+                }}
+              >
                 Delete
               </Button>
-              <Button variant="secondary" className="w-full" onClick={onClose}>
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={onClose}
+                disabled={isLoading}
+              >
                 Cancel
               </Button>
             </ModalFooter>
@@ -57,3 +83,8 @@ export default function DeleteBoardModal({
     </Modal>
   )
 }
+
+/**
+ * Todos:
+ * [ ] Handle error states
+ */

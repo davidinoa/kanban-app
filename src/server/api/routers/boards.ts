@@ -72,6 +72,28 @@ const boardsRouter = createTRPCRouter({
         return newBoard
       })
     }),
+
+  delete: privateProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input
+      const board = await ctx.db.board.findUnique({
+        where: { id, userId: ctx.userId },
+      })
+
+      if (!board) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Board not found',
+        })
+      }
+
+      await ctx.db.board.delete({
+        where: { id },
+      })
+
+      return { message: 'Board deleted successfully' }
+    }),
 })
 
 export default boardsRouter

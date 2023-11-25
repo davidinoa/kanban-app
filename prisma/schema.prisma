@@ -37,7 +37,7 @@ model Column {
   name      String   @db.VarChar(255)
   boardId   Int
   tasks     Task[]
-  Board     Board    @relation(fields: [boardId], references: [id])
+  Board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -51,7 +51,7 @@ model Task {
   status      String    @db.VarChar(255)
   columnId    Int
   subtasks    Subtask[]
-  Column      Column    @relation(fields: [columnId], references: [id])
+  Column      Column    @relation(fields: [columnId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -65,7 +65,7 @@ model Subtask {
   title       String   @db.VarChar(255)
   isCompleted Boolean
   taskId      Int
-  Task        Task     @relation(fields: [taskId], references: [id])
+  Task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
