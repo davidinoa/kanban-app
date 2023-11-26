@@ -49,7 +49,7 @@ export default function BoardsNav({
       </ul>
       <Button
         variant="ghost"
-        className="group w-full justify-start gap-3 rounded-none rounded-r-full p-0 px-6 py-4 text-purple-100 ring-inset ring-blue-600 hover:bg-purple-100/10 focus-visible:bg-purple-100/10 data-[focus-visible=true]:outline-0 data-[focus-visible=true]:ring-2 lg:px-8 lg:text-base"
+        className="group w-full justify-start gap-3 rounded-none rounded-r-full px-6 py-4 text-purple-100 ring-inset ring-blue-600 hover:bg-purple-100/10 focus-visible:bg-purple-100/10 data-[focus-visible=true]:outline-0 data-[focus-visible=true]:ring-2 dark:hover:bg-purple-100/10 lg:px-8 lg:text-base"
         onClick={onCreateBoardClick}
         style={{ opacity: 1 }}
       >

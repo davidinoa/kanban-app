@@ -58,7 +58,7 @@ export default function Sidebar() {
               <div className="md:pr-5 lg:pr-6">
                 <Button
                   variant="ghost"
-                  className="group w-full justify-start gap-3 rounded-none rounded-r-full p-0 px-6 py-4 text-gray-100 hover:bg-purple-100/10 hover:text-purple-100 focus-visible:bg-purple-100/10 focus-visible:text-purple-100 lg:px-8 lg:text-base"
+                  className="group w-full justify-start gap-3 rounded-none rounded-r-full p-0 px-6 py-4 text-gray-100 hover:bg-purple-100/10 hover:text-purple-100 focus-visible:bg-purple-100/10 focus-visible:text-purple-100 dark:hover:bg-purple-100/10 lg:px-8 lg:text-base "
                   onClick={() => setIsSidebarOpen(false)}
                 >
                   <HideSidebarIcon className="group-hover:[&_path]:fill-purple-100 group-focus-visible:[&_path]:fill-purple-100" />

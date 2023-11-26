@@ -18,7 +18,6 @@ export const buttonStyles = cva(
     'w-fit',
     'h-auto',
     'px-4',
-    'leading-none',
   ],
   {
     variants: {
