@@ -16,9 +16,15 @@ import Button from '../button'
 const maxNameLength = 255
 const nameTooLongMessage = `Name must be at most ${maxNameLength} characters long`
 
-const columnSchema = z.object({
-  columnName: z.string().max(maxNameLength, nameTooLongMessage).optional(),
-})
+const columnSchema = z.union([
+  z.object({
+    columnId: z.string().optional(),
+    columnName: z.string().max(maxNameLength, nameTooLongMessage).optional(),
+  }),
+  z.object({
+    columnName: z.string().max(maxNameLength, nameTooLongMessage).optional(),
+  }),
+])
 
 const formSchema = z.object({
   boardName: z
@@ -42,7 +48,10 @@ export default function CreateEditBoardModal({
   onOpenChange,
 }: NewBoardModalProps) {
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.boards.create.useMutation()
+
+  const createMutation = api.boards.create.useMutation()
+  const editMutation = api.boards.edit.useMutation()
+  const isLoading = createMutation.isLoading || editMutation.isLoading
 
   const isCreating = mode === 'create'
   const board = useAppStore((state) => state.currentBoard)
@@ -59,6 +68,7 @@ export default function CreateEditBoardModal({
             boardName: board?.name ?? '',
             columns: board?.columns.length
               ? board.columns.map((column) => ({
+                  columnId: column.id,
                   columnName: column.name,
                 }))
               : [{ columnName: '' }],
@@ -74,13 +84,19 @@ export default function CreateEditBoardModal({
     control,
   })
 
+  if (!isCreating && !board) {
+    return null
+  }
+
   return (
     <Modal
       scrollBehavior="inside"
       placement="center"
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
       onClose={reset}
+      isOpen={isOpen}
+      onOpenChange={(value) => onOpenChange(isLoading ? true : value)}
+      isDismissable={!isLoading}
+      hideCloseButton={isLoading}
       classNames={{
         wrapper: 'p-4',
         base: 'max-w-[30rem] max-h-[70vh]',
@@ -90,29 +106,50 @@ export default function CreateEditBoardModal({
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1 pt-6">
-              {isCreating ? 'Add New Board' : 'Edit Board'}
+              <h2 className="heading-lg">
+                {isCreating ? 'Add New Board' : 'Edit Board'}
+              </h2>
             </ModalHeader>
             <ModalBody>
               <form
                 id="create-edit-board-form"
-                className="flex flex-col gap-6"
+                className="flex flex-col gap-6 text-gray-100 dark:text-white"
                 onSubmit={handleSubmit((data) => {
-                  mutate(
+                  async function handleMutationSuccess() {
+                    await apiUtils.boards.getAllNames.invalidate()
+                    await apiUtils.boards.getById.invalidate()
+                    if (data && data.columns.length === 0) {
+                      data.columns.push({ columnName: '' })
+                    }
+                    reset(data)
+                  }
+
+                  const payload = {
+                    boardName: data.boardName,
+                    columns: data.columns.filter(
+                      (c): c is { columnName: string } => Boolean(c.columnName),
+                    ),
+                  }
+
+                  if (isCreating) {
+                    return createMutation.mutate(payload, {
+                      onSuccess: () => {
+                        handleMutationSuccess()
+                          .then(() => onClose())
+                          .catch(() => undefined)
+                      },
+                    })
+                  }
+
+                  return editMutation.mutate(
                     {
-                      boardName: data.boardName,
-                      columns: data.columns.filter(
-                        (column): column is { columnName: string } =>
-                          Boolean(column.columnName),
-                      ),
+                      ...payload,
+                      boardId: board!.id,
                     },
                     {
                       onSuccess: () => {
-                        apiUtils.boards.getAllNames
-                          .invalidate()
-                          .then(() => {
-                            reset()
-                            onClose()
-                          })
+                        handleMutationSuccess()
+                          .then(() => onClose())
                           .catch(() => undefined)
                       },
                     },
@@ -120,20 +157,18 @@ export default function CreateEditBoardModal({
                 })}
               >
                 <label className="flex flex-col gap-2">
-                  <span className="text-sm font-bold text-gray-100">
+                  <span className="text-xs font-bold md:text-sm">
                     Board Name
                   </span>
                   <input
-                    {...register('boardName', {
-                      required: true,
-                    })}
+                    {...register('boardName', { required: true })}
                     type="text"
                     placeholder="e.g. Web Design"
-                    className="rounded-sm border border-gray-100/25 px-4 py-2 placeholder:text-gray-100/50"
+                    className="rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50"
                   />
                 </label>
-                <fieldset className="flex flex-col gap-2">
-                  <legend className="mb-2 text-sm font-bold text-gray-100">
+                <fieldset className="flex flex-col gap-3">
+                  <legend className="mb-2 text-xs font-bold md:text-sm">
                     Board Columns
                   </legend>
                   {columnFields.map((field, index) => (
@@ -141,7 +176,7 @@ export default function CreateEditBoardModal({
                       <input
                         type="text"
                         placeholder="e.g. Todo"
-                        className="grow rounded border border-gray-100/25 px-4 py-2 placeholder:text-gray-100/50 disabled:cursor-not-allowed"
+                        className="grow rounded border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50 "
                         {...register(`columns.${index}.columnName`)}
                       />
                       <Button
@@ -168,12 +203,12 @@ export default function CreateEditBoardModal({
             </ModalBody>
             <ModalFooter className="flex flex-col pb-8">
               <Button
+                variant="primary"
+                className="w-full"
                 type="submit"
                 form="create-edit-board-form"
                 isLoading={isLoading}
                 disabled={!(formState.isValid && formState.isDirty)}
-                variant="primary"
-                className="w-full"
               >
                 {isCreating ? 'Create New Board' : 'Save Changes'}
               </Button>
@@ -189,4 +224,5 @@ export default function CreateEditBoardModal({
  * TODOS:
  * - Display errors to the users
  * - Disable input after reaching limit
+ * - Consider improving default state for column editing
  */

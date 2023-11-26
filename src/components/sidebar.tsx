@@ -10,7 +10,7 @@ import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
 import BoardsNav from './boards-nav'
 import Button from './button'
-import NewBoardModal from './modals/create-edit-board-modal'
+import CreateEditBoardModal from './modals/create-edit-board-modal'
 import ThemeSwitch from './theme-switch'
 
 export default function Sidebar() {
@@ -70,7 +70,11 @@ export default function Sidebar() {
         </div>
       </motion.aside>
 
-      <NewBoardModal isOpen={isModalOpen} onOpenChange={setIsModalOpen} />
+      <CreateEditBoardModal
+        mode="create"
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
 
       <Button
         variant="primary"

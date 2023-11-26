@@ -10,7 +10,6 @@ const boardsRouter = createTRPCRouter({
       orderBy: { createdAt: 'desc' },
     }),
   ),
-
   getById: privateProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
@@ -70,6 +69,60 @@ const boardsRouter = createTRPCRouter({
           ),
         )
         return newBoard
+      })
+    }),
+
+  edit: privateProcedure
+    .input(
+      z.object({
+        boardId: z.number(),
+        boardName: z.string(),
+        columns: z.array(
+          z.object({
+            columnId: z.number().optional(),
+            columnName: z.string(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { boardId, boardName, columns } = input
+
+      return ctx.db.$transaction(async (prisma) => {
+        await prisma.board.update({
+          where: { id: boardId },
+          data: { name: boardName },
+        })
+
+        const existingColumns = await prisma.column.findMany({
+          where: { boardId },
+          select: { id: true },
+        })
+
+        const inputColumnIds = columns
+          .map((c) => c.columnId)
+          .filter((id) => id !== undefined)
+
+        const deleteOperations = existingColumns
+          .filter((ec) => !inputColumnIds.includes(ec.id))
+          .map((column) => prisma.column.delete({ where: { id: column.id } }))
+
+        const updateOrCreateOperations = columns.map((column) =>
+          column.columnId
+            ? prisma.column.update({
+                where: { id: column.columnId },
+                data: { name: column.columnName },
+              })
+            : prisma.column.create({
+                data: {
+                  name: column.columnName,
+                  boardId,
+                },
+              }),
+        )
+
+        await Promise.all([...deleteOperations, ...updateOrCreateOperations])
+        return { message: 'Board updated successfully' }
       })
     }),
 
