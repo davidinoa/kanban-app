@@ -1,4 +1,5 @@
 import { ClerkProvider } from '@clerk/nextjs'
+import dynamic from 'next/dynamic'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import { cookies } from 'next/headers'
 import { type ReactNode } from 'react'
@@ -13,6 +14,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
 })
+
+const ClerkComponent = dynamic(
+  () => import('@clerk/nextjs').then((mod) => mod.ClerkProvider),
+  { ssr: false },
+)
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

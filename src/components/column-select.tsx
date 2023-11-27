@@ -7,33 +7,33 @@ import {
 } from 'react-hook-form'
 import useAppStore from '~/zustand/app-store'
 
-type ColumnSelectProps<T extends FieldValues> = {
-  control: Control<T>
-  name: Path<T>
+interface ColumnSelectProps<TFieldValues extends FieldValues> {
+  control: Control<TFieldValues>
+  name: Path<TFieldValues>
 }
 
-export default function ColumnSelect<T extends Control<FieldValues>>({
+export default function ColumnSelect<TFieldValues extends FieldValues>({
   control,
   name,
-}: {
-  control: T
-  name: Path<T>
-}) {
+}: ColumnSelectProps<TFieldValues>) {
   const board = useAppStore((state) => state.currentBoard)
   const columns = board?.columns ?? []
 
   if (!columns[0]) return null
+  const defaultSelectedKey = columns[0].id.toString()
 
-  const defaultKey = columns.return(
+  return (
     <Controller
       control={control}
       name={name}
-      render={() => (
+      render={({ field }) => (
         <Select
+          {...field}
           label="Status"
           placeholder="Select a column"
           labelPlacement="outside"
-          defaultSelectedKeys={[columns[0]!.id.toString()]}
+          selectedKeys={[String(field.value)]}
+          defaultSelectedKeys={[defaultSelectedKey]}
           disallowEmptySelection
           classNames={{
             label: 'text-xs md:text-sm !text-gray-100 font-bold',
@@ -53,6 +53,6 @@ export default function ColumnSelect<T extends Control<FieldValues>>({
           ))}
         </Select>
       )}
-    />,
+    />
   )
 }

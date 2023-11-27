@@ -40,7 +40,7 @@ const formSchema = z.object({
     .max(maxTitleLength, titleTooLongMessage),
   description: z.string().optional(),
   subtasks: z.array(subtaskSchema),
-  columnId: z.number(),
+  columnId: z.string(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -76,7 +76,7 @@ export default function CreateEditTaskModal({
         taskTitle: '',
         description: '',
         subtasks: [{ subtaskTitle: '' }],
-        columnId: board?.columns[0]?.id ?? 0,
+        columnId: board?.columns[0]?.id.toString() ?? '',
       },
       // : {
       //     taskTitle: board?.name ?? '',
@@ -124,7 +124,9 @@ export default function CreateEditTaskModal({
                 id="create-edit-task-form"
                 className="flex flex-col gap-6 text-gray-100 dark:text-white"
                 onSubmit={
-                  () => {}
+                  handleSubmit((data) => {
+                    console.log(data)
+                  })
                   //   handleSubmit((data) => {
                   //   async function handleMutationSuccess() {
                   //     await apiUtils.boards.getAllNames.invalidate()
