@@ -10,7 +10,7 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import CrossIcon from '~/assets/icon-cross.svg'
 import { api } from '~/utils/api'
-// import useAppStore from '~/zustand/app-store'
+import useAppStore from '~/zustand/app-store'
 import Button from '../button'
 import ColumnSelect from '../column-select'
 
@@ -40,6 +40,7 @@ const formSchema = z.object({
     .max(maxTitleLength, titleTooLongMessage),
   description: z.string().optional(),
   subtasks: z.array(subtaskSchema),
+  columnId: z.number(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -65,7 +66,7 @@ export default function CreateEditTaskModal({
   const editMutation = api.boards.edit.useMutation()
   const isLoading = createMutation.isLoading || editMutation.isLoading
 
-  // const board = useAppStore((state) => state.currentBoard)
+  const board = useAppStore((state) => state.currentBoard)
   const isCreating = mode === 'create'
 
   const { register, handleSubmit, formState, reset, control } =
@@ -75,6 +76,7 @@ export default function CreateEditTaskModal({
         taskTitle: '',
         description: '',
         subtasks: [{ subtaskTitle: '' }],
+        columnId: board?.columns[0]?.id ?? 0,
       },
       // : {
       //     taskTitle: board?.name ?? '',
@@ -178,8 +180,8 @@ export default function CreateEditTaskModal({
                   </span>
                   <textarea
                     {...register('description')}
-                    placeholder="e.g. It's always good to take a break. This 15 minute break will recharge the batteries a little"
-                    className="scrollbar-hidden h-[4.5rem] w-full resize-none rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 leading-[1.75] placeholder:text-gray-100/50 sm:h-[7rem]"
+                    placeholder="e.g. It's always good to take a break."
+                    className="scrollbar-hidden h-[4.7rem] w-full resize-none rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 leading-[1.75] placeholder:text-gray-100/50 sm:h-[7rem]"
                   />
                 </label>
                 <fieldset className="scrollbar-hidden flex flex-col gap-3 overflow-hidden">
@@ -219,7 +221,7 @@ export default function CreateEditTaskModal({
                     + Add New Subtask
                   </Button>
                 </fieldset>
-                <ColumnSelect />
+                <ColumnSelect control={control} name="columnId" />
               </form>
             </ModalBody>
             <ModalFooter className="flex flex-col py-6">
@@ -245,5 +247,4 @@ export default function CreateEditTaskModal({
  * TODOS:
  * - Display errors to the users
  * - Disable input after reaching limit
- * - Consider improving default state for column editing
  */
