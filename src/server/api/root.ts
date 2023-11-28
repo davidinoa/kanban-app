@@ -1,5 +1,6 @@
 import { createTRPCRouter } from '~/server/api/trpc'
 import boardsRouter from './routers/boards'
+import columnsRouter from './routers/columns'
 import tasksRouter from './routers/tasks'
 
 /**
@@ -9,6 +10,7 @@ import tasksRouter from './routers/tasks'
  */
 export const appRouter = createTRPCRouter({
   boards: boardsRouter,
+  columns: columnsRouter,
   tasks: tasksRouter,
 })
 
