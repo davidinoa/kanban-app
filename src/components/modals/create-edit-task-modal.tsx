@@ -15,6 +15,7 @@ import Button from '../button'
 import ColumnSelect from '../column-select'
 
 const maxTitleLength = 255
+const maxDescriptionLength = 5_000
 const titleTooLongMessage = `Title must be at most ${maxTitleLength} characters long`
 
 const subtaskSchema = z.union([
@@ -38,7 +39,7 @@ const formSchema = z.object({
     .string()
     .min(1, 'Task title is required')
     .max(maxTitleLength, titleTooLongMessage),
-  description: z.string().optional(),
+  description: z.string().max(maxDescriptionLength).optional(),
   subtasks: z.array(subtaskSchema),
   columnId: z.string(),
 })
@@ -60,11 +61,9 @@ export default function CreateEditTaskModal({
   isOpen,
   onOpenChange,
 }: CreateEditTaskModalProps) {
-  // const apiUtils = api.useUtils()
-
-  const createMutation = api.boards.create.useMutation()
-  const editMutation = api.boards.edit.useMutation()
-  const isLoading = createMutation.isLoading || editMutation.isLoading
+  const apiUtils = api.useUtils()
+  const createMutation = api.tasks.create.useMutation()
+  const { isLoading } = createMutation
 
   const board = useAppStore((state) => state.currentBoard)
   const isCreating = mode === 'create'
@@ -123,55 +122,38 @@ export default function CreateEditTaskModal({
               <form
                 id="create-edit-task-form"
                 className="flex flex-col gap-6 text-gray-100 dark:text-white"
-                onSubmit={
-                  handleSubmit((data) => {
-                    console.log(data)
+                onSubmit={handleSubmit((data) => {
+                  const { taskTitle, description, subtasks, columnId } = data
+
+                  const payload = {
+                    taskTitle,
+                    description,
+                    columnId: Number(columnId),
+                    subtasks: subtasks.filter(
+                      (c): c is { subtaskTitle: string } =>
+                        Boolean(c.subtaskTitle),
+                    ),
+                  }
+
+                  return createMutation.mutate(payload, {
+                    onSuccess: () => {
+                      apiUtils.boards.getById
+                        .invalidate()
+                        .then(() => {
+                          reset()
+                          onClose()
+                        })
+                        .catch(() => undefined)
+                    },
                   })
-                  //   handleSubmit((data) => {
-                  //   async function handleMutationSuccess() {
-                  //     await apiUtils.boards.getAllNames.invalidate()
-                  //     await apiUtils.boards.getById.invalidate()
-                  //     if (data && data.columns.length === 0) {
-                  //       data.columns.push({ columnName: '' })
-                  //     }
-                  //     reset(data)
-                  //   }
-                  //   const payload = {
-                  //     boardName: data.boardName,
-                  //     columns: data.columns.filter(
-                  //       (c): c is { columnName: string } => Boolean(c.columnName),
-                  //     ),
-                  //   }
-                  //   if (isCreating) {
-                  //     return createMutation.mutate(payload, {
-                  //       onSuccess: () => {
-                  //         handleMutationSuccess()
-                  //           .then(() => onClose())
-                  //           .catch(() => undefined)
-                  //       },
-                  //     })
-                  //   }
-                  //   return editMutation.mutate(
-                  //     {
-                  //       ...payload,
-                  //       boardId: board!.id,
-                  //     },
-                  //     {
-                  //       onSuccess: () => {
-                  //         handleMutationSuccess()
-                  //           .then(() => onClose())
-                  //           .catch(() => undefined)
-                  //       },
-                  //     },
-                  //   )
-                  // })
-                }
+                })}
               >
                 <label className="flex flex-col gap-2">
                   <span className="text-xs font-bold md:text-sm">Title</span>
                   <input
                     {...register('taskTitle', { required: true })}
                     type="text"
+                    autoComplete="off"
                     placeholder="e.g. Take coffee break"
                     className="rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50"
                   />
@@ -249,4 +231,5 @@ export default function CreateEditTaskModal({
  * TODOS:
  * - Display errors to the users
  * - Disable input after reaching limit
+ * - Cleanup submit handler
  */
