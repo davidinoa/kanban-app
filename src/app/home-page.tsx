@@ -1,10 +1,10 @@
 'use client'
 
 import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs'
-import { Button } from '@nextui-org/button'
 import { Card, CardBody } from '@nextui-org/card'
 import { Spinner } from '@nextui-org/spinner'
 import { useEffect } from 'react'
+import CreateNewColumnsModal from '~/components/modals/create-new-columns-modal'
 import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
 
@@ -80,9 +80,7 @@ export default function HomePage() {
             </ul>
           </section>
         ))}
-        <Button className="mt-12 h-full rounded-md bg-sky text-2xl font-bold text-gray-100 dark:bg-gray-300/25">
-          + New Column
-        </Button>
+        <CreateNewColumnsModal boardId={currentBoardQuery.data.id} />
       </div>
       <div className="flex flex-col text-white">
         {isSignedIn ? (

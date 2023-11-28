@@ -6,6 +6,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@nextui-org/modal'
+import { useEffect, useMemo } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import CrossIcon from '~/assets/icon-cross.svg'
@@ -56,10 +57,9 @@ export default function CreateEditBoardModal({
   const isCreating = mode === 'create'
   const board = useAppStore((state) => state.currentBoard)
 
-  const { register, handleSubmit, formState, reset, control } =
-    useForm<FormValues>({
-      resolver: zodResolver(formSchema),
-      defaultValues: isCreating
+  const defaultValues = useMemo(
+    () =>
+      isCreating
         ? {
             boardName: '',
             columns: [{ columnName: '' }],
@@ -73,6 +73,13 @@ export default function CreateEditBoardModal({
                 }))
               : [{ columnName: '' }],
           },
+    [board, isCreating],
+  )
+
+  const { register, handleSubmit, formState, reset, control } =
+    useForm<FormValues>({
+      resolver: zodResolver(formSchema),
+      defaultValues,
     })
 
   const {
@@ -83,6 +90,10 @@ export default function CreateEditBoardModal({
     name: 'columns',
     control,
   })
+
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
 
   if (!isCreating && !board) {
     return null
