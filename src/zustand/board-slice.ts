@@ -1,5 +1,6 @@
 import { type StateCreator } from 'zustand'
 import { type RouterOutputs } from '~/trpc/shared'
+import { type AppStore } from './app-store'
 
 type Board = RouterOutputs['boards']['getById']
 
@@ -8,7 +9,7 @@ export type BoardSlice = {
   setCurrentBoard: (currentBoard: Board) => void
 }
 
-export const createBoardSlice: StateCreator<BoardSlice, [], [], BoardSlice> = (
+export const createBoardSlice: StateCreator<AppStore, [], [], BoardSlice> = (
   set,
 ) => ({
   currentBoard: undefined,
