@@ -33,7 +33,7 @@ export default function Sidebar() {
         initial={initialOpenState.current}
         animate={isSidebarOpen ? 'open' : 'closed'}
         variants={sidebarVariants}
-        className="overflow-auto dark:bg-gray-300"
+        className="overflow-auto dark:bg-gray-300 overflow-x-hidden"
       >
         <div className="hidden h-full flex-col gap-6 border-r border-sky dark:border-gray-200  md:flex md:w-[16.25rem] lg:w-[18.75rem]">
           <div className="flex h-20 flex-shrink-0 items-center px-6 lg:h-24">
