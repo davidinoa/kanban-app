@@ -107,21 +107,31 @@ const boardsRouter = createTRPCRouter({
           .filter((ec) => !inputColumnIds.includes(ec.id))
           .map((column) => prisma.column.delete({ where: { id: column.id } }))
 
-        const updateOrCreateOperations = columns.map((column) =>
-          column.columnId
-            ? prisma.column.update({
-                where: { id: column.columnId },
-                data: { name: column.columnName },
-              })
-            : prisma.column.create({
-                data: {
-                  name: column.columnName,
-                  boardId,
-                },
-              }),
-        )
+        const updateOperations = columns
+          .filter((column) => column.columnId)
+          .map((column) =>
+            prisma.column.update({
+              where: { id: column.columnId },
+              data: { name: column.columnName },
+            }),
+          )
 
-        await Promise.all([...deleteOperations, ...updateOrCreateOperations])
+        const createOperations = columns
+          .filter((column) => !column.columnId)
+          .map((column) =>
+            prisma.column.create({
+              data: {
+                boardId,
+                name: column.columnName,
+              },
+            }),
+          )
+
+        await Promise.all([
+          ...deleteOperations,
+          ...updateOperations,
+          ...createOperations,
+        ])
         return { message: 'Board updated successfully' }
       })
     }),

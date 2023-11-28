@@ -68,7 +68,7 @@ export default function CreateEditBoardModal({
             boardName: board?.name ?? '',
             columns: board?.columns.length
               ? board.columns.map((column) => ({
-                  columnId: column.id,
+                  columnId: String(column.id),
                   columnName: column.name,
                 }))
               : [{ columnName: '' }],
@@ -126,9 +126,15 @@ export default function CreateEditBoardModal({
 
                   const payload = {
                     boardName: data.boardName,
-                    columns: data.columns.filter(
-                      (c): c is { columnName: string } => Boolean(c.columnName),
-                    ),
+                    columns: data.columns
+                      .filter(
+                        (c): c is { columnName: string; columnId?: string } =>
+                          Boolean(c.columnName),
+                      )
+                      .map((c) => ({
+                        ...c,
+                        columnId: c.columnId ? Number(c.columnId) : undefined,
+                      })),
                   }
 
                   if (isCreating) {
