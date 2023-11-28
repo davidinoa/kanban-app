@@ -80,7 +80,7 @@ export default function HomePage() {
             </ul>
           </section>
         ))}
-        <Button className="mt-12 h-full rounded-md bg-sky text-2xl font-bold text-gray-100">
+        <Button className="mt-12 h-full rounded-md bg-sky text-2xl font-bold text-gray-100 dark:bg-gray-300/25">
           + New Column
         </Button>
       </div>
