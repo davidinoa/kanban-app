@@ -31,14 +31,18 @@ export default function BoardsNav({
           return (
             <li key={board.id}>
               <Link
-                href="#"
-                className={`lg: group flex items-center gap-3 rounded-r-full px-6 py-4 hover:bg-purple-100/10 hover:text-purple-100 focus-visible:bg-purple-100/10 focus-visible:text-purple-100 lg:px-8 ${
-                  isLinkActive ? 'bg-purple-100 text-white' : ''
+                href={`/boards/${board.id}`}
+                className={`lg: group flex items-center gap-3 rounded-r-full px-6 py-4 transition-colors lg:px-8 ${
+                  isLinkActive
+                    ? 'bg-purple-100 text-white'
+                    : 'hover:bg-purple-100/10 hover:text-purple-100 focus-visible:bg-purple-100/10 focus-visible:text-purple-100'
                 }`}
               >
                 <BoardIcon
-                  className={`group-hover:[&_path]:fill-purple-100 group-focus-visible:[&_path]:fill-purple-100 ${
-                    isLinkActive ? '[&_path]:fill-white' : ''
+                  className={`${
+                    isLinkActive
+                      ? '[&_path]:fill-white'
+                      : 'group-hover:[&_path]:fill-purple-100 group-focus-visible:[&_path]:fill-purple-100'
                   }`}
                 />
                 <span className="truncate">{board.name}</span>

@@ -8,15 +8,16 @@ import CreateColumnsModal from '~/components/modals/create-columns-modal'
 import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
 
-export default function HomePage() {
+type HomePageProps = {
+  boardId: string
+}
+
+export default function HomePage({ boardId }: HomePageProps) {
   const { isLoaded: userIsLoaded } = useUser()
 
-  const boardNamesQuery = api.boards.getAllNames.useQuery()
-  const defaultBoardId = boardNamesQuery.data?.[0]?.id
-
   const currentBoardQuery = api.boards.getById.useQuery(
-    { id: defaultBoardId! },
-    { enabled: Boolean(defaultBoardId) },
+    { id: Number(boardId) },
+    { enabled: Boolean(boardId) },
   )
 
   const setCurrentBoard = useAppStore((state) => state.setCurrentBoard)
@@ -50,7 +51,7 @@ export default function HomePage() {
 
   return (
     <div
-      className="grid min-h-full min-w-fit grid-flow-col gap-6 p-6"
+      className="grid min-h-full grid-flow-col gap-6 p-6"
       style={{ gridAutoColumns: '19.5rem' }}
     >
       {currentBoardQuery.data.columns.map((column) => (
