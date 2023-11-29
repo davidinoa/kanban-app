@@ -15,12 +15,10 @@ import { api } from '~/utils/api'
 import Button from '../button'
 
 const maxNameLength = 255
-const nameTooLongMessage = `Name must be at most ${maxNameLength} characters long`
-
 const formSchema = z.object({
   columns: z.array(
     z.object({
-      name: z.string().max(maxNameLength, nameTooLongMessage).optional(),
+      name: z.string().max(maxNameLength, 'Name is too long'),
     }),
   ),
 })
@@ -35,6 +33,7 @@ export default function CreateColumnsModal({ boardId }: { boardId: number }) {
 
   const { register, handleSubmit, formState, reset, control, watch } =
     useForm<FormValues>({
+      mode: 'onChange',
       resolver: zodResolver(formSchema),
       defaultValues: {
         columns: [{ name: '' }],
@@ -109,26 +108,38 @@ export default function CreateColumnsModal({ boardId }: { boardId: number }) {
                     <legend className="mb-2 text-xs font-bold md:text-sm">
                       Board Columns
                     </legend>
-                    {columnFields.map((field, index) => (
-                      <div key={field.id} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          placeholder="e.g. Todo"
-                          className="grow rounded border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50 "
-                          {...register(`columns.${index}.name`)}
-                        />
-                        <Button
-                          variant="icon"
-                          tabIndex={-1}
-                          aria-label="delete column"
-                          className="-mr-2 h-fit px-2 py-2"
-                          disabled={columnFields.length === 1}
-                          onClick={() => remove(index)}
-                        >
-                          <CrossIcon />
-                        </Button>
-                      </div>
-                    ))}
+                    {columnFields.map((field, index) => {
+                      const fieldError = formState.errors.columns?.[index]?.name
+                      return (
+                        <div key={field.id} className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              placeholder="e.g. Todo"
+                              maxLength={maxNameLength + 1}
+                              aria-invalid={Boolean(fieldError)}
+                              className="aria-invalid:border-red-100 grow rounded border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50"
+                              {...register(`columns.${index}.name`)}
+                            />
+                            <Button
+                              variant="icon"
+                              tabIndex={-1}
+                              aria-label="delete column"
+                              className="-mr-2 h-fit px-2 py-2"
+                              disabled={columnFields.length === 1}
+                              onClick={() => remove(index)}
+                            >
+                              <CrossIcon />
+                            </Button>
+                          </div>
+                          {fieldError && (
+                            <p className="px-2 text-xs text-red-100">
+                              {fieldError.message}
+                            </p>
+                          )}
+                        </div>
+                      )
+                    })}
                     <Button
                       variant="secondary"
                       className="w-full"
@@ -145,9 +156,9 @@ export default function CreateColumnsModal({ boardId }: { boardId: number }) {
               </ModalBody>
               <ModalFooter className="flex flex-col pb-8">
                 <Button
+                  type="submit"
                   variant="primary"
                   className="w-full"
-                  type="submit"
                   form="create-edit-board-form"
                   isLoading={isLoading}
                   disabled={!(formState.isValid && formState.isDirty)}
@@ -165,7 +176,5 @@ export default function CreateColumnsModal({ boardId }: { boardId: number }) {
 
 /**
  * TODOS:
- * - Display errors to the users
  * - Disable input after reaching limit
- * - Consider improving default state for column editing
  */

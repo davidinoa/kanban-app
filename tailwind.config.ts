@@ -11,6 +11,9 @@ export default {
   ],
   theme: {
     extend: {
+      aria: {
+        invalid: 'invalid="true"',
+      },
       colors: {
         black: '#000112',
         gray: {
