@@ -116,6 +116,7 @@ export default function CreateColumnsModal({ boardId }: { boardId: number }) {
                             <input
                               type="text"
                               placeholder="e.g. Todo"
+                              autoComplete="off"
                               maxLength={maxNameLength + 1}
                               aria-invalid={Boolean(fieldError)}
                               className="aria-invalid:border-red-100 grow rounded border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50"
@@ -173,8 +174,3 @@ export default function CreateColumnsModal({ boardId }: { boardId: number }) {
     </>
   )
 }
-
-/**
- * TODOS:
- * - Disable input after reaching limit
- */

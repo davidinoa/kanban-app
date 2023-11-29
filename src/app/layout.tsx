@@ -1,4 +1,9 @@
-import { ClerkProvider } from '@clerk/nextjs'
+import {
+  ClerkProvider,
+  RedirectToSignIn,
+  SignedIn,
+  SignedOut,
+} from '@clerk/nextjs'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import { cookies } from 'next/headers'
 import { type ReactNode } from 'react'
@@ -18,16 +23,21 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider>
-      <TRPCReactProvider cookies={cookies().toString()}>
-        <html lang="en" className={plusJakartaSans.className}>
-          <body>
-            <Providers>
-              <Toaster />
-              <Layout>{children}</Layout>
-            </Providers>
-          </body>
-        </html>
-      </TRPCReactProvider>
+      <SignedIn>
+        <TRPCReactProvider cookies={cookies().toString()}>
+          <html lang="en" className={plusJakartaSans.className}>
+            <body>
+              <Providers>
+                <Toaster />
+                <Layout>{children}</Layout>
+              </Providers>
+            </body>
+          </html>
+        </TRPCReactProvider>
+      </SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
     </ClerkProvider>
   )
 }
