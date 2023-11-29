@@ -4,7 +4,7 @@ import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs'
 import { Card, CardBody } from '@nextui-org/card'
 import { Spinner } from '@nextui-org/spinner'
 import { useEffect } from 'react'
-import CreateNewColumnsModal from '~/components/modals/create-new-columns-modal'
+import CreateColumnsModal from '~/components/modals/create-columns-modal'
 import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
 
@@ -52,12 +52,12 @@ export default function HomePage() {
     <>
       <div
         className="grid min-h-full min-w-fit grid-flow-col gap-6 p-6"
-        style={{ gridAutoColumns: '17.5rem' }}
+        style={{ gridAutoColumns: '19.5rem' }}
       >
         {currentBoardQuery.data.columns.map((column) => (
-          <section key={column.id}>
+          <section key={column.id} className="flex flex-col">
             <h3 className="mb-6">{column.name}</h3>
-            <ul className="gap flex flex-col gap-5">
+            <ul className="flex grow flex-col gap-5 rounded-md p-4 dark:bg-gray-300/25">
               {column.tasks.map((task) => (
                 <li key={task.id}>
                   <Card
@@ -80,7 +80,7 @@ export default function HomePage() {
             </ul>
           </section>
         ))}
-        <CreateNewColumnsModal boardId={currentBoardQuery.data.id} />
+        <CreateColumnsModal boardId={currentBoardQuery.data.id} />
       </div>
       <div className="flex flex-col text-white">
         {isSignedIn ? (

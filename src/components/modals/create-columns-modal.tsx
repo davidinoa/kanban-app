@@ -8,6 +8,7 @@ import {
   useDisclosure,
 } from '@nextui-org/modal'
 import { useFieldArray, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { z } from 'zod'
 import CrossIcon from '~/assets/icon-cross.svg'
 import { api } from '~/utils/api'
@@ -26,11 +27,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-export default function CreateNewColumnsModal({
-  boardId,
-}: {
-  boardId: number
-}) {
+export default function CreateColumnsModal({ boardId }: { boardId: number }) {
   const { isOpen, onOpenChange, onOpen } = useDisclosure()
   const apiUtils = api.useUtils()
   const createMutation = api.columns.create.useMutation()
@@ -87,15 +84,6 @@ export default function CreateNewColumnsModal({
                   id="create-edit-board-form"
                   className="flex flex-col gap-6 text-gray-100 dark:text-white"
                   onSubmit={handleSubmit((data) => {
-                    async function handleMutationSuccess() {
-                      await apiUtils.boards.getAllNames.invalidate()
-                      await apiUtils.boards.getById.invalidate()
-                      if (data && data.columns.length === 0) {
-                        data.columns.push({ name: '' })
-                      }
-                      reset(data)
-                    }
-
                     const payload = {
                       boardId,
                       columns: data.columns.filter((c): c is { name: string } =>
@@ -104,10 +92,15 @@ export default function CreateNewColumnsModal({
                     }
 
                     return createMutation.mutate(payload, {
+                      onError: (error) => toast.error(error.message),
                       onSuccess: () => {
-                        handleMutationSuccess()
-                          .then(() => onClose())
-                          .catch(() => undefined)
+                        apiUtils.boards.getById
+                          .invalidate()
+                          .then(() => {
+                            toast.success('Columns created successfully')
+                            onClose()
+                          })
+                          .catch(() => toast.error('Something went wrong'))
                       },
                     })
                   })}

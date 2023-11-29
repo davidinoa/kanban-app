@@ -2,6 +2,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import { cookies } from 'next/headers'
 import { type ReactNode } from 'react'
+import { Toaster } from 'react-hot-toast'
 import Layout from '~/components/layout'
 import '~/styles/globals.css'
 import { TRPCReactProvider } from '~/trpc/react'
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <html lang="en" className={plusJakartaSans.className}>
           <body>
             <Providers>
+              <Toaster />
               <Layout>{children}</Layout>
             </Providers>
           </body>
