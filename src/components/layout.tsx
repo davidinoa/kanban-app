@@ -9,7 +9,7 @@ export default function Layout({ children }: PropsWithChildren) {
     <div className="layout-container h-[100svh]">
       <Header />
       <Sidebar />
-      <main className="scrollbar-hidden min-w-[300px] overflow-auto bg-gray-50 dark:bg-gray-400">
+      <main className="scrollbar-hidden p4 min-w-[300px] overflow-auto bg-gray-50 dark:bg-gray-400">
         {children}
       </main>
     </div>

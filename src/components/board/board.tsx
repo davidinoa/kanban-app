@@ -17,6 +17,7 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useEffect, useState } from 'react'
 import { type RouterOutputs } from '~/trpc/shared'
 import useAppStore from '~/zustand/app-store'
+import CreateColumnsModal from '../modals/create-columns-modal'
 import Column from './column'
 import Draggable from './draggable'
 import { insertAtIndex, removeAtIndex } from './utils'
@@ -115,7 +116,7 @@ export default function Board({ board }: BoardProps) {
     )
   }
 
-  const handleDragEnd = ({ active, over }: DragOverEvent) => {
+  function handleDragEnd({ active, over }: DragOverEvent) {
     if (!over) return setActiveTaskId(null)
 
     const activeItemId = active.id
@@ -167,17 +168,21 @@ export default function Board({ board }: BoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div
-        className="grid min-h-full grid-flow-col gap-6 p-6"
-        style={{ gridAutoColumns: '19.5rem' }}
-      >
-        {board.columns.map((column) => (
-          <Column
-            key={column.id}
-            column={column}
-            taskIds={taskGroups[column.id.toString()] ?? []}
-          />
-        ))}
+      <div className="min-h-full min-w-fit pr-4">
+        <div
+          className="grid h-full grid-flow-col gap-6 p-6"
+          style={{ gridAutoColumns: '19.5rem' }}
+        >
+          {board.columns.map((column) => (
+            <Column
+              key={column.id}
+              column={column}
+              taskIds={taskGroups[column.id.toString()] ?? []}
+            />
+          ))}
+          <div className="h-[3600px]" />
+          <CreateColumnsModal boardId={board.id} />
+        </div>
       </div>
       <DragOverlay zIndex={20}>
         {activeTaskId ? (
