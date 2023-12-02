@@ -15,9 +15,10 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useEffect, useState } from 'react'
-import './board.css'
+import { type RouterOutputs } from '~/trpc/shared'
+import useAppStore from '~/zustand/app-store'
+import Column from './column'
 import Draggable from './draggable'
-import Droppable from './droppable'
 import { insertAtIndex, removeAtIndex } from './utils'
 
 type TaskGroups = Record<string, string[]>
@@ -26,7 +27,16 @@ type RefData = {
   sortable: { containerId: string; index: number }
 }
 
-export default function Board() {
+type BoardProps = {
+  board: RouterOutputs['boards']['getById']
+}
+
+export default function Board({ board }: BoardProps) {
+  const setCurrentBoard = useAppStore((state) => state.setCurrentBoard)
+  useEffect(() => {
+    setCurrentBoard(board)
+  }, [setCurrentBoard, board])
+
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor),
@@ -35,21 +45,14 @@ export default function Board() {
     }),
   )
 
-  const [taskGroups, setTaskGroups] = useState<TaskGroups>({
-    'column-1': ['01', '02', '03'],
-    'column-2': ['04', '05', '06'],
-    'column-3': ['07', '08', '09', '10'],
-  })
+  const [taskGroups, setTaskGroups] = useState<TaskGroups>(
+    board.columns.reduce<TaskGroups>((acc, column) => {
+      acc[column.id] = column.tasks.map((task) => String(task.id))
+      return acc
+    }, {}),
+  )
 
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (activeTaskId) {
-      document.body.classList.add('cursor-grabbing')
-    } else {
-      document.body.classList.remove('cursor-grabbing')
-    }
-  }, [activeTaskId])
 
   function moveBetweenContainers<T extends keyof TaskGroups>({
     tasks,
@@ -120,14 +123,21 @@ export default function Board() {
     if (activeItemId === overId) return setActiveTaskId(null)
 
     const activeRefData = active.data.current as RefData
-    const overRefData = over.data.current as RefData
+    const overData = over.data.current as RefData | undefined
     const activeContainerId = activeRefData.sortable.containerId
-    const overContainerId = overRefData.sortable.containerId
+    const overContainerId = (overData?.sortable.containerId ??
+      over.id) as keyof TaskGroups
     const activeItemIndex = activeRefData.sortable.index
     const overIndex =
       overId in taskGroups
         ? taskGroups[overContainerId]!.length + 1
-        : overRefData.sortable.index
+        : overData?.sortable.index ?? 0
+
+    const draggedElement = document.getElementById(`task-${activeItemId}`)!
+    const draggedElementRect = draggedElement.getBoundingClientRect()
+    if (draggedElementRect.top < 80) {
+      draggedElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
 
     return setTaskGroups((prevItemGroups) =>
       activeContainerId === overContainerId
@@ -157,16 +167,19 @@ export default function Board() {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="container">
-        {Object.keys(taskGroups).map((columnId) => (
-          <Droppable
-            key={columnId}
-            columnId={columnId}
-            taskIds={taskGroups[columnId] ?? []}
+      <div
+        className="grid min-h-full grid-flow-col gap-6 p-6"
+        style={{ gridAutoColumns: '19.5rem' }}
+      >
+        {board.columns.map((column) => (
+          <Column
+            key={column.id}
+            column={column}
+            taskIds={taskGroups[column.id.toString()] ?? []}
           />
         ))}
       </div>
-      <DragOverlay>
+      <DragOverlay zIndex={20}>
         {activeTaskId ? (
           <Draggable taskId={activeTaskId} displayOverlay />
         ) : null}

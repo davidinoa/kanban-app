@@ -25,7 +25,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <ClerkProvider>
       <SignedIn>
         <TRPCReactProvider cookies={cookies().toString()}>
-          <html lang="en" className={plusJakartaSans.className}>
+          <html
+            lang="en"
+            className={plusJakartaSans.className}
+            suppressHydrationWarning
+          >
             <body>
               <Providers>
                 <Toaster />
