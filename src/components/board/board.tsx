@@ -168,7 +168,7 @@ export default function Board({ board }: BoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="min-h-full min-w-fit pr-4">
+      <div className="h-full min-w-fit pr-4">
         <div
           className="grid h-full grid-flow-col gap-6 p-6"
           style={{ gridAutoColumns: '19.5rem' }}
@@ -180,7 +180,6 @@ export default function Board({ board }: BoardProps) {
               taskIds={taskGroups[column.id.toString()] ?? []}
             />
           ))}
-          <div className="h-[3600px]" />
           <CreateColumnsModal boardId={board.id} />
         </div>
       </div>

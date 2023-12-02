@@ -6,7 +6,8 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@nextui-org/modal'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import { flushSync } from 'react-dom'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import CrossIcon from '~/assets/icon-cross.svg'
@@ -49,7 +50,6 @@ export default function CreateEditBoardModal({
   onOpenChange,
 }: NewBoardModalProps) {
   const apiUtils = api.useUtils()
-
   const createMutation = api.boards.create.useMutation()
   const editMutation = api.boards.edit.useMutation()
   const isLoading = createMutation.isLoading || editMutation.isLoading
@@ -91,6 +91,8 @@ export default function CreateEditBoardModal({
     control,
   })
 
+  const addColumnRef = useRef<HTMLButtonElement>(null)
+
   useEffect(() => {
     reset(defaultValues)
   }, [defaultValues, reset])
@@ -110,7 +112,7 @@ export default function CreateEditBoardModal({
       hideCloseButton={isLoading}
       classNames={{
         wrapper: 'p-4',
-        base: 'max-w-[30rem] max-h-[70vh]',
+        base: 'max-w-[30rem] max-h-[70vh] sm:max-h-[60vh] md:max-h-[50vh]',
       }}
     >
       <ModalContent>
@@ -198,20 +200,30 @@ export default function CreateEditBoardModal({
                       />
                       <Button
                         variant="icon"
-                        tabIndex={-1}
+                        id={`delete-column-${index}`}
                         aria-label="delete column"
                         className="-mr-2 h-fit px-2 py-2"
                         disabled={columnFields.length === 1}
-                        onClick={() => remove(index)}
+                        onPress={() => {
+                          const previousInput = document.querySelector(
+                            `[name="columns.${index - 1}.columnName"]`,
+                          ) as HTMLInputElement | undefined
+                          previousInput?.focus()
+                          remove(index)
+                        }}
                       >
                         <CrossIcon />
                       </Button>
                     </div>
                   ))}
                   <Button
+                    ref={addColumnRef}
                     variant="secondary"
                     className="w-full"
-                    onClick={() => append({ columnName: '' })}
+                    onPress={(e) => {
+                      flushSync(() => append({ columnName: '' }))
+                      e.target.scrollIntoView({ behavior: 'smooth' })
+                    }}
                   >
                     + Add New Column
                   </Button>

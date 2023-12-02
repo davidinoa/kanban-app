@@ -54,7 +54,6 @@ export default function Draggable({
     >
       <div className="relative">
         <Card
-          draggable
           isPressable
           classNames={{
             body: 'p-0 flex flex-col gap-2',

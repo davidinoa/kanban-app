@@ -124,11 +124,10 @@ export default function CreateColumnsModal({ boardId }: { boardId: number }) {
                             />
                             <Button
                               variant="icon"
-                              tabIndex={-1}
                               aria-label="delete column"
                               className="-mr-2 h-fit px-2 py-2"
                               disabled={columnFields.length === 1}
-                              onClick={() => remove(index)}
+                              onPress={() => remove(index)}
                             >
                               <CrossIcon />
                             </Button>
@@ -148,7 +147,7 @@ export default function CreateColumnsModal({ boardId }: { boardId: number }) {
                         watch('columns').at(-1)?.name === '' ||
                         !formState.isValid
                       }
-                      onClick={() => append({ name: '' })}
+                      onPress={() => append({ name: '' })}
                     >
                       + Add New Column
                     </Button>

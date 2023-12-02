@@ -12,7 +12,10 @@ export default function Column({ taskIds, column }: ColumnProps) {
   const columnId = String(column.id)
   const { setNodeRef } = useDroppable({ id: columnId })
   return (
-    <section key={columnId} className="flex flex-col">
+    <section
+      key={columnId}
+      className="flex max-h-full flex-col overflow-hidden"
+    >
       <h3 className="mb-6">{column.name}</h3>
       <SortableContext
         id={columnId}
@@ -21,7 +24,7 @@ export default function Column({ taskIds, column }: ColumnProps) {
       >
         <ul
           ref={setNodeRef}
-          className="flex grow flex-col gap-5 rounded-md p-4 dark:bg-gray-300/25"
+          className="scrollbar-hidden flex grow flex-col gap-5 overflow-auto rounded-md p-4 dark:bg-gray-300/25"
         >
           {taskIds.map((taskId) => (
             <Draggable key={taskId} taskId={taskId} />
