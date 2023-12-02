@@ -1,6 +1,6 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
+import { SignOutButton, useUser } from '@clerk/nextjs'
 import { Card, CardBody } from '@nextui-org/card'
 import { Spinner } from '@nextui-org/spinner'
 import { useEffect } from 'react'
@@ -85,6 +85,7 @@ export default function HomePage({ boardId }: HomePageProps) {
         ))}
         <CreateColumnsModal boardId={currentBoardQuery.data.id} />
       </div>
+      <SignOutButton />
     </>
   )
 }

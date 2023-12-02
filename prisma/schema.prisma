@@ -63,3 +63,13 @@ model Subtask {
   @@index([taskId]) // Index for fetching subtasks of a task
   @@index([isCompleted]) // Index for filtering subtasks by completion status
 }
+
+model Settings {
+  userId        String   @id // Unique identifier for a user from the third-party service
+  theme         String   @db.VarChar(255) // To store the theme preference
+  isSidebarOpen Boolean  // To store the sidebar open/close status
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId]) // Ensure userId is unique across all settings
+}

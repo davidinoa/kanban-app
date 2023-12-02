@@ -1,6 +1,7 @@
 import { createTRPCRouter } from '~/server/api/trpc'
 import boardsRouter from './routers/boards'
 import columnsRouter from './routers/columns'
+import settingsRouter from './routers/settings'
 import tasksRouter from './routers/tasks'
 
 /**
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   boards: boardsRouter,
   columns: columnsRouter,
   tasks: tasksRouter,
+  settings: settingsRouter,
 })
 
 // export type definition of API

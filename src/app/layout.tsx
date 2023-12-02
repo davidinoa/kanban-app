@@ -6,7 +6,7 @@ import {
 } from '@clerk/nextjs'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import { cookies } from 'next/headers'
-import { type ReactNode } from 'react'
+import { type PropsWithChildren } from 'react'
 import { Toaster } from 'react-hot-toast'
 import Layout from '~/components/layout'
 import '~/styles/globals.css'
@@ -20,28 +20,28 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   display: 'swap',
 })
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <ClerkProvider>
-      <SignedIn>
-        <TRPCReactProvider cookies={cookies().toString()}>
-          <html
-            lang="en"
-            className={plusJakartaSans.className}
-            suppressHydrationWarning
-          >
-            <body>
+    <html
+      lang="en"
+      className={plusJakartaSans.className}
+      suppressHydrationWarning
+    >
+      <body>
+        <ClerkProvider>
+          <SignedIn>
+            <TRPCReactProvider cookies={cookies().toString()}>
               <Providers>
                 <Toaster />
                 <Layout>{children}</Layout>
               </Providers>
-            </body>
-          </html>
-        </TRPCReactProvider>
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </ClerkProvider>
+            </TRPCReactProvider>
+          </SignedIn>
+          <SignedOut>
+            <RedirectToSignIn />
+          </SignedOut>
+        </ClerkProvider>
+      </body>
+    </html>
   )
 }

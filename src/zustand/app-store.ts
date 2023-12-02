@@ -17,10 +17,10 @@ const useAppStore = create<AppStore>()(
       name: 'kanban-app-storage',
       storage: createJSONStorage(() => localStorage),
 
-      onRehydrateStorage: () => (state) => {
-        if (state?.theme === 'dark')
-          document.documentElement.classList.add('dark')
-      },
+      // onRehydrateStorage: () => (state) => {
+      //   if (state?.theme === 'dark')
+      //     document.documentElement.classList.add('dark')
+      // },
     },
   ),
 )
