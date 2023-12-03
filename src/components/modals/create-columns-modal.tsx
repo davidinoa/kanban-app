@@ -143,7 +143,7 @@ export default function CreateColumnsModal({ boardId }: { boardId: number }) {
                     <Button
                       variant="secondary"
                       className="w-full"
-                      disabled={
+                      isDisabled={
                         watch('columns').at(-1)?.name === '' ||
                         !formState.isValid
                       }

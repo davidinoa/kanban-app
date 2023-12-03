@@ -3,6 +3,7 @@ import {
   type ButtonProps as NextUiButtonProps,
 } from '@nextui-org/button'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { forwardRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 export const buttonStyles = cva(
@@ -14,6 +15,7 @@ export const buttonStyles = cva(
     'disabled:data-[hover=true]:opacity-30',
     'disabled:opacity-30',
     'disabled:cursor-not-allowed',
+    'disabled:pointer-events-auto',
     'min-w-fit',
     'w-fit',
     'h-auto',
@@ -71,13 +73,10 @@ export const buttonStyles = cva(
 type ButtonProps = VariantProps<typeof buttonStyles> &
   Omit<NextUiButtonProps, 'variant' | 'size'>
 
-export default function Button({
-  variant,
-  size,
-  children,
-  className,
-  ...props
-}: ButtonProps) {
+function BaseButton(
+  { variant, size, children, className, ...props }: ButtonProps,
+  _ref: unknown,
+) {
   return (
     <NextUiButton
       {...props}
@@ -89,7 +88,5 @@ export default function Button({
   )
 }
 
-/**
- * Todos:
- * [ ] Investigate what opacity value is being applied on hover
- */
+const Button = forwardRef(BaseButton)
+export default Button

@@ -88,52 +88,58 @@ const boardsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { boardId, boardName, columns } = input
 
-      return ctx.db.$transaction(async (prisma) => {
-        await prisma.board.update({
-          where: { id: boardId },
-          data: { name: boardName },
-        })
+      return ctx.db.$transaction(
+        async (prisma) => {
+          await prisma.board.update({
+            where: { id: boardId },
+            data: { name: boardName },
+          })
 
-        const existingColumns = await prisma.column.findMany({
-          where: { boardId },
-          select: { id: true },
-        })
+          const existingColumns = await prisma.column.findMany({
+            where: { boardId },
+            select: { id: true },
+          })
 
-        const inputColumnIds = columns
-          .map((c) => c.columnId)
-          .filter((id) => id !== undefined)
+          const inputColumnIds = columns
+            .map((c) => c.columnId)
+            .filter((id) => id !== undefined)
 
-        const deleteOperations = existingColumns
-          .filter((ec) => !inputColumnIds.includes(ec.id))
-          .map((column) => prisma.column.delete({ where: { id: column.id } }))
+          const deleteOperations = existingColumns
+            .filter((ec) => !inputColumnIds.includes(ec.id))
+            .map((column) => prisma.column.delete({ where: { id: column.id } }))
 
-        const updateOperations = columns
-          .filter((column) => column.columnId)
-          .map((column) =>
-            prisma.column.update({
-              where: { id: column.columnId },
-              data: { name: column.columnName },
-            }),
-          )
+          const updateOperations = columns
+            .filter((column) => column.columnId)
+            .map((column) =>
+              prisma.column.update({
+                where: { id: column.columnId },
+                data: { name: column.columnName },
+              }),
+            )
 
-        const createOperations = columns
-          .filter((column) => !column.columnId)
-          .map((column) =>
-            prisma.column.create({
-              data: {
-                boardId,
-                name: column.columnName,
-              },
-            }),
-          )
+          const createOperations = columns
+            .filter((column) => !column.columnId)
+            .map((column) =>
+              prisma.column.create({
+                data: {
+                  boardId,
+                  name: column.columnName,
+                },
+              }),
+            )
 
-        await Promise.all([
-          ...deleteOperations,
-          ...updateOperations,
-          ...createOperations,
-        ])
-        return { message: 'Board updated successfully' }
-      })
+          await Promise.all([
+            ...deleteOperations,
+            ...updateOperations,
+            ...createOperations,
+          ])
+          return { message: 'Board updated successfully' }
+        },
+        {
+          maxWait: 10_000,
+          timeout: 10_000,
+        },
+      )
     }),
 
   delete: privateProcedure

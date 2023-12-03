@@ -32,7 +32,11 @@ export default function RootLayout({ children }: PropsWithChildren) {
           <SignedIn>
             <TRPCReactProvider cookies={cookies().toString()}>
               <Providers>
-                <Toaster />
+                <Toaster
+                  toastOptions={{
+                    className: 'dark:bg-gray-200 dark:text-white',
+                  }}
+                />
                 <Layout>{children}</Layout>
               </Providers>
             </TRPCReactProvider>

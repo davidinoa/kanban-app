@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Modal,
@@ -6,10 +7,12 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@nextui-org/modal'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { useFieldArray, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { z } from 'zod'
+import { useShallow } from 'zustand/react/shallow'
 import CrossIcon from '~/assets/icon-cross.svg'
 import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
@@ -20,11 +23,11 @@ const nameTooLongMessage = `Name must be at most ${maxNameLength} characters lon
 
 const columnSchema = z.union([
   z.object({
-    columnId: z.string().optional(),
-    columnName: z.string().max(maxNameLength, nameTooLongMessage).optional(),
+    columnId: z.string(),
+    columnName: z.string().min(1).max(maxNameLength, nameTooLongMessage),
   }),
   z.object({
-    columnName: z.string().max(maxNameLength, nameTooLongMessage).optional(),
+    columnName: z.string().min(1).max(maxNameLength, nameTooLongMessage),
   }),
 ])
 
@@ -49,34 +52,93 @@ export default function CreateEditBoardModal({
   isOpen,
   onOpenChange,
 }: NewBoardModalProps) {
-  const apiUtils = api.useUtils()
   const createMutation = api.boards.create.useMutation()
   const editMutation = api.boards.edit.useMutation()
   const isLoading = createMutation.isLoading || editMutation.isLoading
 
   const isCreating = mode === 'create'
-  const board = useAppStore((state) => state.currentBoard)
+  const board = useAppStore(useShallow((state) => state.currentBoard))
 
-  const defaultValues = useMemo(
-    () =>
-      isCreating
-        ? {
-            boardName: '',
-            columns: [{ columnName: '' }],
-          }
-        : {
-            boardName: board?.name ?? '',
-            columns: board?.columns.length
-              ? board.columns.map((column) => ({
-                  columnId: String(column.id),
-                  columnName: column.name,
-                }))
-              : [{ columnName: '' }],
-          },
-    [board, isCreating],
+  const defaultEmptyColumnFields = [{ columnName: '' }]
+  const defaultValues = isCreating
+    ? {
+        boardName: '',
+        columns: defaultEmptyColumnFields,
+      }
+    : {
+        boardName: board?.name ?? '',
+        columns: board?.columns.length
+          ? [
+              ...board.columns.map((column) => ({
+                columnId: String(column.id),
+                columnName: column.name,
+              })),
+            ]
+          : defaultEmptyColumnFields,
+      }
+
+  const [readyToClose, setReadyToClose] = useState(false)
+
+  useEffect(() => {
+    if (readyToClose) {
+      setReadyToClose(false)
+      onOpenChange(false)
+    }
+  }, [onOpenChange, readyToClose])
+
+  if (!isCreating && !board) {
+    return null
+  }
+
+  return (
+    <Modal
+      scrollBehavior="inside"
+      placement="center"
+      isOpen={isOpen}
+      onOpenChange={(value) => onOpenChange(isLoading ? true : value)}
+      isDismissable={!isLoading}
+      hideCloseButton={isLoading}
+      classNames={{
+        wrapper: 'p-4',
+        base: 'max-w-[30rem] max-h-[min(calc(100%-2rem),37.5rem)]',
+      }}
+    >
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1 pt-6">
+          <h2 className="heading-lg">
+            {isCreating ? 'Add New Board' : 'Edit Board'}
+          </h2>
+        </ModalHeader>
+        {isOpen ? (
+          <Form
+            boardId={board?.id}
+            isCreating={isCreating}
+            defaultValues={defaultValues}
+            setReadyToClose={setReadyToClose}
+          />
+        ) : null}
+      </ModalContent>
+    </Modal>
   )
+}
 
-  const { register, handleSubmit, formState, reset, control } =
+function Form({
+  defaultValues,
+  isCreating,
+  setReadyToClose,
+  boardId,
+}: {
+  defaultValues: FormValues
+  isCreating: boolean
+  setReadyToClose: (value: boolean) => void
+  // eslint-disable-next-line react/require-default-props
+  boardId?: number
+}) {
+  const apiUtils = api.useUtils()
+  const createMutation = api.boards.create.useMutation()
+  const editMutation = api.boards.edit.useMutation()
+
+  const { register, handleSubmit, formState, reset, control, watch } =
     useForm<FormValues>({
       resolver: zodResolver(formSchema),
       defaultValues,
@@ -91,161 +153,127 @@ export default function CreateEditBoardModal({
     control,
   })
 
-  const addColumnRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    reset(defaultValues)
-  }, [defaultValues, reset])
-
-  if (!isCreating && !board) {
-    return null
-  }
+  const isLoading = createMutation.isLoading || editMutation.isLoading
 
   return (
-    <Modal
-      scrollBehavior="inside"
-      placement="center"
-      onClose={reset}
-      isOpen={isOpen}
-      onOpenChange={(value) => onOpenChange(isLoading ? true : value)}
-      isDismissable={!isLoading}
-      hideCloseButton={isLoading}
-      classNames={{
-        wrapper: 'p-4',
-        base: 'max-w-[30rem] max-h-[70vh] sm:max-h-[60vh] md:max-h-[50vh]',
-      }}
-    >
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1 pt-6">
-              <h2 className="heading-lg">
-                {isCreating ? 'Add New Board' : 'Edit Board'}
-              </h2>
-            </ModalHeader>
-            <ModalBody>
-              <form
-                id="create-edit-board-form"
-                className="flex flex-col gap-6 text-gray-100 dark:text-white"
-                onSubmit={handleSubmit((data) => {
-                  async function handleMutationSuccess() {
-                    await apiUtils.boards.getAllNames.invalidate()
-                    await apiUtils.boards.getById.invalidate()
-                    if (data && data.columns.length === 0) {
-                      data.columns.push({ columnName: '' })
-                    }
-                    reset(data)
-                  }
+    <>
+      <ModalBody>
+        <form
+          id="create-edit-board-form"
+          className="flex flex-col gap-6 text-gray-100 dark:text-white"
+          onSubmit={handleSubmit((data) => {
+            const payload = {
+              boardName: data.boardName,
+              columns: data.columns
+                .filter((c): c is { columnName: string; columnId?: string } =>
+                  Boolean(c.columnName),
+                )
+                .map((c) => ({
+                  ...c,
+                  columnId: c.columnId ? Number(c.columnId) : undefined,
+                })),
+            }
 
-                  const payload = {
-                    boardName: data.boardName,
-                    columns: data.columns
-                      .filter(
-                        (c): c is { columnName: string; columnId?: string } =>
-                          Boolean(c.columnName),
-                      )
-                      .map((c) => ({
-                        ...c,
-                        columnId: c.columnId ? Number(c.columnId) : undefined,
-                      })),
-                  }
+            async function handleMutationSuccess() {
+              await apiUtils.boards.getAllNames.invalidate()
+              await apiUtils.boards.getById.invalidate()
+              toast.success('Board updated successfully')
+              reset(isCreating ? undefined : payload)
+            }
 
-                  if (isCreating) {
-                    return createMutation.mutate(payload, {
-                      onSuccess: () => {
-                        handleMutationSuccess()
-                          .then(() => onClose())
-                          .catch(() => undefined)
-                      },
-                    })
-                  }
+            if (isCreating) {
+              return createMutation.mutate(payload, {
+                onSuccess: () => {
+                  handleMutationSuccess()
+                    .then(() => setReadyToClose(true))
+                    .catch(() => undefined)
+                },
+              })
+            }
 
-                  return editMutation.mutate(
-                    {
-                      ...payload,
-                      boardId: board!.id,
-                    },
-                    {
-                      onSuccess: () => {
-                        handleMutationSuccess()
-                          .then(() => onClose())
-                          .catch(() => undefined)
-                      },
-                    },
-                  )
-                })}
-              >
-                <label className="flex flex-col gap-2">
-                  <span className="text-xs font-bold md:text-sm">
-                    Board Name
-                  </span>
-                  <input
-                    {...register('boardName', { required: true })}
-                    type="text"
-                    placeholder="e.g. Web Design"
-                    className="rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50"
-                  />
-                </label>
-                <fieldset className="flex flex-col gap-3">
-                  <legend className="mb-2 text-xs font-bold md:text-sm">
-                    Board Columns
-                  </legend>
-                  {columnFields.map((field, index) => (
-                    <div key={field.id} className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        placeholder="e.g. Todo"
-                        className="grow rounded border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50 "
-                        {...register(`columns.${index}.columnName`)}
-                      />
-                      <Button
-                        variant="icon"
-                        id={`delete-column-${index}`}
-                        aria-label="delete column"
-                        className="-mr-2 h-fit px-2 py-2"
-                        disabled={columnFields.length === 1}
-                        onPress={() => {
-                          const previousInput = document.querySelector(
-                            `[name="columns.${index - 1}.columnName"]`,
-                          ) as HTMLInputElement | undefined
-                          previousInput?.focus()
-                          remove(index)
-                        }}
-                      >
-                        <CrossIcon />
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    ref={addColumnRef}
-                    variant="secondary"
-                    className="w-full"
-                    onPress={(e) => {
-                      flushSync(() => append({ columnName: '' }))
-                      e.target.scrollIntoView({ behavior: 'smooth' })
-                    }}
-                  >
-                    + Add New Column
-                  </Button>
-                </fieldset>
-              </form>
-            </ModalBody>
-            <ModalFooter className="flex flex-col pb-8">
-              <Button
-                variant="primary"
-                className="w-full"
-                type="submit"
-                form="create-edit-board-form"
-                isLoading={isLoading}
-                disabled={!(formState.isValid && formState.isDirty)}
-              >
-                {isCreating ? 'Create New Board' : 'Save Changes'}
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+            return editMutation.mutate(
+              {
+                ...payload,
+                boardId: boardId!,
+              },
+              {
+                onSuccess: () => {
+                  handleMutationSuccess()
+                    .then(() => setReadyToClose(true))
+                    .catch(() => undefined)
+                },
+              },
+            )
+          })}
+        >
+          <label className="flex flex-col gap-2">
+            <span className="text-xs font-bold md:text-sm">Board Name</span>
+            <input
+              {...register('boardName', { required: true })}
+              type="text"
+              autoComplete="off"
+              placeholder="e.g. Web Design"
+              className="rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50"
+            />
+          </label>
+          <fieldset className="flex flex-col gap-3">
+            <legend className="mb-2 text-xs font-bold md:text-sm">
+              Board Columns
+            </legend>
+            {columnFields.map((field, index) => (
+              <div key={field.id} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  autoComplete="off"
+                  placeholder="e.g. Todo"
+                  className="grow rounded border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50 "
+                  {...register(`columns.${index}.columnName`)}
+                />
+                <Button
+                  variant="icon"
+                  id={`delete-column-${index}`}
+                  aria-label="delete column"
+                  className="-mr-2 h-fit px-2 py-2"
+                  isDisabled={columnFields.length === 1}
+                  onPress={() => {
+                    const previousInput = document.querySelector(
+                      `[name="columns.${index - 1}.columnName"]`,
+                    ) as HTMLInputElement | undefined
+                    previousInput?.focus()
+                    remove(index)
+                  }}
+                >
+                  <CrossIcon />
+                </Button>
+              </div>
+            ))}
+            <Button
+              variant="secondary"
+              className="w-full"
+              isDisabled={watch('columns').at(-1)?.columnName === ''}
+              onPress={(e) => {
+                flushSync(() => append({ columnName: '' }))
+                e.target.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              + Add New Column
+            </Button>
+          </fieldset>
+        </form>
+      </ModalBody>
+      <ModalFooter className="flex flex-col pb-8">
+        <Button
+          variant="primary"
+          className="w-full"
+          type="submit"
+          form="create-edit-board-form"
+          isLoading={isLoading}
+          disabled={!(formState.isValid && formState.isDirty)}
+        >
+          {isCreating ? 'Create New Board' : 'Save Changes'}
+        </Button>
+      </ModalFooter>
+    </>
   )
 }
 
@@ -253,5 +281,4 @@ export default function CreateEditBoardModal({
  * TODOS:
  * - Display errors to the users
  * - Disable input after reaching limit
- * - Consider improving default state for column editing
  */
