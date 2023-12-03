@@ -13,8 +13,8 @@ import Button from './button'
 import CreateEditTaskModal from './modals/create-edit-task-modal'
 
 export default function Header() {
-  const isSidebarOpen = useAppStore((state) => state.isSidebarOpen)
   const board = useAppStore((state) => state.currentBoard)
+  const isSidebarOpen = useAppStore((state) => state.isSidebarOpen)
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
 
   if (!board) return null
@@ -42,7 +42,7 @@ export default function Header() {
       <h1 className="hidden grow font-bold leading-tight md:block md:text-xl lg:text-2xl">
         {board?.name}
       </h1>
-      <BoardsPopover />
+      <BoardsPopover currentBoardName={board.name} />
       <div className="flex items-center gap-2 md:gap-4">
         <Button
           size="large"
