@@ -6,7 +6,7 @@ type Board = RouterOutputs['boards']['getById']
 
 export type BoardSlice = {
   currentBoard?: Board
-  setCurrentBoard: (currentBoard: Board) => void
+  setCurrentBoard: (currentBoard?: Board) => void
 }
 
 export const createBoardSlice: StateCreator<AppStore, [], [], BoardSlice> = (

@@ -18,8 +18,6 @@ export default function Header() {
   const isSidebarOpen = useAppStore((state) => state.isSidebarOpen)
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
 
-  if (!board) return null
-
   return (
     <header className="z-40 flex h-16 min-w-fit items-center gap-2 border-b-1 border-sky px-4 pr-2 dark:border-gray-200 dark:bg-gray-300 md:h-20 md:gap-6 md:px-6 md:pr-4 lg:h-24 lg:gap-8">
       {!isSidebarOpen && (
@@ -40,35 +38,40 @@ export default function Header() {
           />
         </>
       )}
-      <h1 className="hidden grow font-bold leading-tight md:block md:text-xl lg:text-2xl">
-        {board?.name}
-      </h1>
-      <BoardsPopover currentBoardName={board.name} />
-      <div className="flex items-center gap-2 md:gap-4">
-        <Button
-          size="large"
-          disabled={!board}
-          className="hidden px-6 md:inline-block"
-          onClick={() => setIsTaskModalOpen(true)}
-        >
-          + Add New Task
-        </Button>
-        <Button
-          aria-label="add new task"
-          disabled={!board}
-          className="px-5 py-2.5 md:hidden"
-          onClick={() => setIsTaskModalOpen(true)}
-        >
-          <AddTaskIcon />
-        </Button>
-        <CreateEditTaskModal
-          mode="create"
-          isOpen={isTaskModalOpen}
-          onOpenChange={(isOpen) => setIsTaskModalOpen(isOpen)}
-        />
-        <BoardActionsPopover />
-        <SignOutButton />
-      </div>
+      {board ? (
+        <>
+          <h1 className="hidden grow font-bold leading-tight md:block md:text-xl lg:text-2xl">
+            {board?.name}
+          </h1>
+          <BoardsPopover currentBoardName={board.name} />
+          <div className="flex items-center gap-2 md:gap-4">
+            <Button
+              size="large"
+              disabled={!board}
+              className="hidden px-6 md:inline-block"
+              onClick={() => setIsTaskModalOpen(true)}
+            >
+              + Add New Task
+            </Button>
+            <Button
+              aria-label="add new task"
+              disabled={!board}
+              className="px-5 py-2.5 md:hidden"
+              onClick={() => setIsTaskModalOpen(true)}
+            >
+              <AddTaskIcon />
+            </Button>
+            <CreateEditTaskModal
+              mode="create"
+              isOpen={isTaskModalOpen}
+              onOpenChange={(isOpen) => setIsTaskModalOpen(isOpen)}
+            />
+            <BoardActionsPopover />
+          </div>
+        </>
+      ) : null}
+
+      <SignOutButton />
     </header>
   )
 }

@@ -18,5 +18,8 @@ export default async function Page() {
   }
   const boardNamesQuery = await api.boards.getAllNames.query()
   const defaultBoardId = boardNamesQuery[0]?.id
+  if (!defaultBoardId) {
+    return redirect('/boards/new')
+  }
   return redirect(`/boards/${defaultBoardId}`)
 }

@@ -36,7 +36,7 @@ const formSchema = z.object({
     .string()
     .min(1, 'Board name is required')
     .max(maxNameLength, nameTooLongMessage),
-  columns: z.array(columnSchema),
+  columns: z.array(columnSchema).optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -59,11 +59,9 @@ export default function CreateEditBoardModal({
   const isCreating = mode === 'create'
   const board = useAppStore(useShallow((state) => state.currentBoard))
 
-  const defaultEmptyColumnFields = [{ columnName: '' }]
   const defaultValues = isCreating
     ? {
         boardName: '',
-        columns: defaultEmptyColumnFields,
       }
     : {
         boardName: board?.name ?? '',
@@ -74,7 +72,7 @@ export default function CreateEditBoardModal({
                 columnName: column.name,
               })),
             ]
-          : defaultEmptyColumnFields,
+          : undefined,
       }
 
   const [readyToClose, setReadyToClose] = useState(false)
@@ -164,14 +162,16 @@ function Form({
           onSubmit={handleSubmit((data) => {
             const payload = {
               boardName: data.boardName,
-              columns: data.columns
-                .filter((c): c is { columnName: string; columnId?: string } =>
-                  Boolean(c.columnName),
-                )
-                .map((c) => ({
-                  ...c,
-                  columnId: c.columnId ? Number(c.columnId) : undefined,
-                })),
+              columns:
+                data.columns
+                  ?.filter(
+                    (c): c is { columnName: string; columnId?: string } =>
+                      Boolean(c.columnName),
+                  )
+                  .map((c) => ({
+                    ...c,
+                    columnId: c.columnId ? Number(c.columnId) : undefined,
+                  })) ?? [],
             }
 
             async function handleMutationSuccess() {
@@ -217,9 +217,11 @@ function Form({
             />
           </label>
           <fieldset className="flex flex-col gap-3">
-            <legend className="mb-2 text-xs font-bold md:text-sm">
-              Board Columns
-            </legend>
+            {columnFields.length > 0 && (
+              <legend className="mb-2 text-xs font-bold md:text-sm">
+                Board Columns
+              </legend>
+            )}
             {columnFields.map((field, index) => (
               <div key={field.id} className="flex items-center gap-2">
                 <input
@@ -234,7 +236,6 @@ function Form({
                   id={`delete-column-${index}`}
                   aria-label="delete column"
                   className="-mr-2 h-fit px-2 py-2"
-                  isDisabled={columnFields.length === 1}
                   onPress={() => {
                     const previousInput = document.querySelector(
                       `[name="columns.${index - 1}.columnName"]`,
@@ -250,7 +251,7 @@ function Form({
             <Button
               variant="secondary"
               className="w-full"
-              isDisabled={watch('columns').at(-1)?.columnName === ''}
+              isDisabled={watch('columns')?.at(-1)?.columnName === ''}
               onPress={(e) => {
                 flushSync(() => append({ columnName: '' }))
                 e.target.scrollIntoView({ behavior: 'smooth' })
@@ -268,7 +269,7 @@ function Form({
           type="submit"
           form="create-edit-board-form"
           isLoading={isLoading}
-          disabled={!(formState.isValid && formState.isDirty)}
+          isDisabled={!(formState.isValid && formState.isDirty)}
         >
           {isCreating ? 'Create New Board' : 'Save Changes'}
         </Button>

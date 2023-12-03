@@ -22,9 +22,11 @@ export default function BoardsNav({
 
   return (
     <nav className={className} {...props}>
-      <h2 className="mb-4 px-6 text-left uppercase heading-sm md:mb-5">
-        {`All Boards (${data.length})`}
-      </h2>
+      {data.length !== 0 && (
+        <h2 className="mb-4 px-6 text-left uppercase heading-sm md:mb-5">
+          {`All Boards (${data.length})`}
+        </h2>
+      )}
       <ul className="text-sm font-bold leading-tight text-gray-100 lg:text-base">
         {data.map((board) => {
           const isLinkActive = pathname === `/boards/${board.id}`
