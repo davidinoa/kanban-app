@@ -1,5 +1,6 @@
 'use client'
 
+import { SignOutButton } from '@clerk/nextjs'
 import { Divider } from '@nextui-org/divider'
 import { useState } from 'react'
 import AddTaskIcon from '~/assets/icon-add-task-mobile.svg'
@@ -66,6 +67,7 @@ export default function Header() {
           onOpenChange={(isOpen) => setIsTaskModalOpen(isOpen)}
         />
         <BoardActionsPopover />
+        <SignOutButton />
       </div>
     </header>
   )

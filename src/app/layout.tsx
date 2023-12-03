@@ -1,9 +1,4 @@
-import {
-  ClerkProvider,
-  RedirectToSignIn,
-  SignedIn,
-  SignedOut,
-} from '@clerk/nextjs'
+import { ClerkProvider, SignedIn, SignedOut } from '@clerk/nextjs'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import { cookies } from 'next/headers'
 import { type PropsWithChildren } from 'react'
@@ -29,21 +24,19 @@ export default function RootLayout({ children }: PropsWithChildren) {
     >
       <body>
         <ClerkProvider>
-          <SignedIn>
-            <TRPCReactProvider cookies={cookies().toString()}>
-              <Providers>
+          <TRPCReactProvider cookies={cookies().toString()}>
+            <Providers>
+              <SignedIn>
                 <Toaster
                   toastOptions={{
                     className: 'dark:bg-gray-200 dark:text-white',
                   }}
                 />
                 <Layout>{children}</Layout>
-              </Providers>
-            </TRPCReactProvider>
-          </SignedIn>
-          <SignedOut>
-            <RedirectToSignIn />
-          </SignedOut>
+              </SignedIn>
+              <SignedOut>{children}</SignedOut>
+            </Providers>
+          </TRPCReactProvider>
         </ClerkProvider>
       </body>
     </html>
