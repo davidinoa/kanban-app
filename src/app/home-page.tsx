@@ -2,6 +2,7 @@
 
 import { useUser } from '@clerk/nextjs'
 import { Spinner } from '@nextui-org/spinner'
+import { notFound } from 'next/navigation'
 import { useEffect } from 'react'
 import CreateBoardSection from '~/components/board/create-board-section'
 import { api } from '~/utils/api'
@@ -39,11 +40,7 @@ export default function HomePage({ boardId }: HomePageProps) {
       return <CreateBoardSection />
     }
 
-    return (
-      <div>
-        Something went wrong while loading the board. Please try again later.
-      </div>
-    )
+    return notFound()
   }
 
   if (!userIsLoaded || currentBoardQuery.isLoading) {
