@@ -5,6 +5,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@nextui-org/modal'
+import { useRouter } from 'next/navigation'
 import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
 import Button from '../button'
@@ -18,6 +19,9 @@ export default function DeleteBoardModal({
   isOpen,
   onOpenChange,
 }: DeleteBoardModalProps) {
+  const router = useRouter()
+  const boardNamesQuery = api.boards.getAllNames.useQuery()
+  const nextDefaultBoardId = boardNamesQuery?.data?.[1]?.id
   const board = useAppStore((state) => state.currentBoard)
   const { mutate, isLoading } = api.boards.delete.useMutation()
   const apiUtils = api.useUtils()
@@ -32,7 +36,7 @@ export default function DeleteBoardModal({
       placement="center"
       classNames={{ wrapper: 'p-4' }}
     >
-      <ModalContent className="@container m-0 flex max-w-[30rem] flex-col gap-6 rounded-md p-6 dark:bg-gray-300 md:p-8">
+      <ModalContent className="m-0 flex max-w-[30rem] flex-col gap-6 rounded-md p-6 @container dark:bg-gray-300 md:p-8">
         {(onClose) => (
           <>
             <ModalHeader className="p-0">
@@ -47,7 +51,7 @@ export default function DeleteBoardModal({
                 reversed.
               </p>
             </ModalBody>
-            <ModalFooter className="@[20rem]:flex-row flex flex-col gap-4 p-0">
+            <ModalFooter className="flex flex-col gap-4 p-0 @[20rem]:flex-row">
               <Button
                 variant="danger"
                 className="w-full"
@@ -59,6 +63,11 @@ export default function DeleteBoardModal({
                       onSuccess: () => {
                         apiUtils.boards.getAllNames
                           .invalidate()
+                          .then(() =>
+                            router.push(
+                              `/boards/${nextDefaultBoardId ?? 'new'}`,
+                            ),
+                          )
                           .then(() => onClose())
                           .catch(() => undefined)
                       },

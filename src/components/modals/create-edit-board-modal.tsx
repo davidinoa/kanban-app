@@ -7,6 +7,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@nextui-org/modal'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -129,18 +130,25 @@ function Form({
   defaultValues: FormValues
   isCreating: boolean
   setReadyToClose: (value: boolean) => void
-  // eslint-disable-next-line react/require-default-props
   boardId?: number
 }) {
+  const router = useRouter()
+
   const apiUtils = api.useUtils()
   const createMutation = api.boards.create.useMutation()
   const editMutation = api.boards.edit.useMutation()
 
-  const { register, handleSubmit, formState, reset, control, watch } =
-    useForm<FormValues>({
-      resolver: zodResolver(formSchema),
-      defaultValues,
-    })
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues,
+  })
 
   const {
     fields: columnFields,
@@ -183,9 +191,10 @@ function Form({
 
             if (isCreating) {
               return createMutation.mutate(payload, {
-                onSuccess: () => {
+                onSuccess: ({ id }) => {
                   handleMutationSuccess()
                     .then(() => setReadyToClose(true))
+                    .then(() => router.push(`/boards/${id}`))
                     .catch(() => undefined)
                 },
               })
@@ -213,8 +222,14 @@ function Form({
               type="text"
               autoComplete="off"
               placeholder="e.g. Web Design"
-              className="rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50"
+              aria-invalid={Boolean(errors.boardName)}
+              className="rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50 aria-invalid:border-red-100"
             />
+            {errors.boardName && (
+              <p role="alert" className="text-xs text-red-100 md:text-sm">
+                {errors.boardName.message}
+              </p>
+            )}
           </label>
           <fieldset className="flex flex-col gap-3">
             {columnFields.length > 0 && (
@@ -223,34 +238,42 @@ function Form({
               </legend>
             )}
             {columnFields.map((field, index) => (
-              <div key={field.id} className="flex items-center gap-2">
-                <input
-                  type="text"
-                  autoComplete="off"
-                  placeholder="e.g. Todo"
-                  className="grow rounded border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50 "
-                  {...register(`columns.${index}.columnName`)}
-                />
-                <Button
-                  variant="icon"
-                  id={`delete-column-${index}`}
-                  aria-label="delete column"
-                  className="-mr-2 h-fit px-2 py-2"
-                  onPress={() => {
-                    const previousInput = document.querySelector(
-                      `[name="columns.${index - 1}.columnName"]`,
-                    ) as HTMLInputElement | undefined
-                    previousInput?.focus()
-                    remove(index)
-                  }}
-                >
-                  <CrossIcon />
-                </Button>
+              <div key={field.id}>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    autoComplete="off"
+                    placeholder="e.g. Todo"
+                    aria-invalid={Boolean(errors.columns?.[index])}
+                    className="grow rounded border border-gray-100/25 bg-transparent px-4 py-2 placeholder:text-gray-100/50 aria-invalid:border-red-100"
+                    {...register(`columns.${index}.columnName`)}
+                  />
+                  <Button
+                    variant="icon"
+                    id={`delete-column-${index}`}
+                    aria-label="delete column"
+                    className="-mr-2 h-fit px-2 py-2"
+                    onPress={() => {
+                      const previousInput = document.querySelector(
+                        `[name="columns.${index - 1}.columnName"]`,
+                      ) as HTMLInputElement | undefined
+                      previousInput?.focus()
+                      remove(index)
+                    }}
+                  >
+                    <CrossIcon />
+                  </Button>
+                </div>
+                {errors.columns?.[index] && (
+                  <p role="alert" className="text-xs text-red-100 md:text-sm">
+                    Enter a name or remove this field
+                  </p>
+                )}
               </div>
             ))}
             <Button
               variant="secondary"
-              className="w-full"
+              className="w-full text-xs md:text-sm"
               isDisabled={watch('columns')?.at(-1)?.columnName === ''}
               onPress={(e) => {
                 flushSync(() => append({ columnName: '' }))
@@ -262,14 +285,13 @@ function Form({
           </fieldset>
         </form>
       </ModalBody>
-      <ModalFooter className="flex flex-col pb-8">
+      <ModalFooter className="flex flex-col pb-6 md:pb-8">
         <Button
           variant="primary"
-          className="w-full"
+          className="w-full text-xs md:text-sm"
           type="submit"
           form="create-edit-board-form"
           isLoading={isLoading}
-          isDisabled={!(formState.isValid && formState.isDirty)}
         >
           {isCreating ? 'Create New Board' : 'Save Changes'}
         </Button>
@@ -280,6 +302,5 @@ function Form({
 
 /**
  * TODOS:
- * - Display errors to the users
  * - Disable input after reaching limit
  */
