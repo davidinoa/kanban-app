@@ -36,11 +36,11 @@ export default function HomePage({ boardId }: HomePageProps) {
   }
 
   if (currentBoardQuery.error) {
-    if (currentBoardQuery.error.data?.code === 'NOT_FOUND') {
-      return <CreateBoardSection />
+    const { code } = currentBoardQuery.error.data ?? {}
+    if (code === 'NOT_FOUND' || code === 'BAD_REQUEST') {
+      return notFound()
     }
-
-    return notFound()
+    return <div>{currentBoardQuery.error.message}</div>
   }
 
   if (!userIsLoaded || currentBoardQuery.isLoading) {
