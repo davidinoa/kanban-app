@@ -189,8 +189,8 @@ export default function CreateEditTaskModal({
                           tabIndex={-1}
                           aria-label="delete column"
                           className="-mr-2 h-fit px-2 py-2"
-                          disabled={columnFields.length === 1}
-                          onClick={() => remove(index)}
+                          isDisabled={columnFields.length === 1}
+                          onPress={() => remove(index)}
                         >
                           <CrossIcon />
                         </Button>
@@ -200,7 +200,7 @@ export default function CreateEditTaskModal({
                   <Button
                     variant="secondary"
                     className="w-full flex-shrink-0"
-                    onClick={() => append({ subtaskTitle: '' })}
+                    onPress={() => append({ subtaskTitle: '' })}
                   >
                     + Add New Subtask
                   </Button>
@@ -215,7 +215,7 @@ export default function CreateEditTaskModal({
                 type="submit"
                 form="create-edit-task-form"
                 isLoading={isLoading}
-                disabled={!(formState.isValid && formState.isDirty)}
+                isDisabled={!(formState.isValid && formState.isDirty)}
               >
                 {isCreating ? 'Create New Task' : 'Save Changes'}
               </Button>
