@@ -24,6 +24,11 @@ export default function HomePage({ boardId }: HomePageProps) {
   const setCurrentBoard = useAppStore((state) => state.setCurrentBoard)
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    useAppStore.persist.rehydrate()
+  }, [])
+
+  useEffect(() => {
     if (currentBoardQuery.data) {
       setCurrentBoard(currentBoardQuery.data)
     } else {

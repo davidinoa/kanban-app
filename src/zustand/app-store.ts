@@ -16,6 +16,7 @@ const useAppStore = create<AppStore>()(
     {
       name: 'kanban-app-storage',
       storage: createJSONStorage(() => localStorage),
+      skipHydration: true,
 
       // onRehydrateStorage: () => (state) => {
       //   if (state?.theme === 'dark')

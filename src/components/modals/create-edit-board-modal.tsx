@@ -191,11 +191,13 @@ function Form({
 
             if (isCreating) {
               return createMutation.mutate(payload, {
+                onError: (error) =>
+                  toast.error(error.message ?? 'Failed to create board'),
                 onSuccess: ({ id }) => {
                   handleMutationSuccess()
                     .then(() => setReadyToClose(true))
                     .then(() => router.push(`/boards/${id}`))
-                    .catch(() => undefined)
+                    .catch(() => toast.error("Couldn't redirect to new board"))
                 },
               })
             }

@@ -1,8 +1,8 @@
-import dynamic from 'next/dynamic'
-import { type PropsWithChildren } from 'react'
-import Sidebar from './sidebar'
+'use client'
 
-const Header = dynamic(() => import('./header'), { ssr: false })
+import { type PropsWithChildren } from 'react'
+import Header from './header'
+import Sidebar from './sidebar'
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
