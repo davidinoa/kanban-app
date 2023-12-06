@@ -1,12 +1,12 @@
-/* eslint-disable react/require-default-props */
-
 'use client'
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card, CardBody } from '@nextui-org/card'
+import { useState } from 'react'
 import DragIcon from '~/assets/icon-drag.svg'
 import useAppStore from '~/zustand/app-store'
+import ViewTaskModal from '../modals/view-task-modal'
 
 type DraggableProps = {
   taskId: string
@@ -27,6 +27,8 @@ export default function Draggable({
   } = useSortable({
     id: taskId,
   })
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const board = useAppStore((state) => state.currentBoard)
   if (!board) return null
@@ -55,6 +57,7 @@ export default function Draggable({
       <div className="relative">
         <Card
           isPressable
+          onPress={() => setIsModalOpen(true)}
           classNames={{
             body: 'p-0 flex flex-col gap-2',
             base: `px-4 py-6 w-full relative`,
@@ -80,6 +83,11 @@ export default function Draggable({
           <DragIcon width={20} height={20} />
         </button>
       </div>
+      <ViewTaskModal
+        task={task}
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </li>
   )
 }

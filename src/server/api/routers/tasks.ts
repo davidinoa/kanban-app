@@ -57,6 +57,44 @@ const tasksRouter = createTRPCRouter({
         return newTask
       })
     }),
+
+  update: privateProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        columnId: z.number().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { db, userId } = ctx
+      const { id, title, description, columnId } = input
+
+      try {
+        const targetTask = await db.task.findUnique({
+          where: { id, Column: { Board: { userId } } },
+        })
+
+        if (!targetTask) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Task not found or does not belong to the user',
+          })
+        }
+
+        return await db.task.update({
+          where: { id },
+          data: { title, description, columnId },
+        })
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Could not update task',
+          cause: error instanceof Error ? error : undefined,
+        })
+      }
+    }),
 })
 
 export default tasksRouter

@@ -28,8 +28,17 @@ type RefData = {
   sortable: { containerId: string; index: number }
 }
 
+type BoardType = RouterOutputs['boards']['getById']
+
 type BoardProps = {
-  board: RouterOutputs['boards']['getById']
+  board: BoardType
+}
+
+function transformBoardToTaskGroups(board: BoardType) {
+  return board.columns.reduce<TaskGroups>((acc, column) => {
+    acc[column.id] = column.tasks.map((task) => String(task.id))
+    return acc
+  }, {})
 }
 
 export default function Board({ board }: BoardProps) {
@@ -47,13 +56,12 @@ export default function Board({ board }: BoardProps) {
   )
 
   const [taskGroups, setTaskGroups] = useState<TaskGroups>(
-    board.columns.reduce<TaskGroups>((acc, column) => {
-      acc[column.id] = column.tasks.map((task) => String(task.id))
-      return acc
-    }, {}),
+    transformBoardToTaskGroups(board),
   )
 
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
+
+  useEffect(() => setTaskGroups(transformBoardToTaskGroups(board)), [board])
 
   function moveBetweenContainers<T extends keyof TaskGroups>({
     tasks,
@@ -167,6 +175,7 @@ export default function Board({ board }: BoardProps) {
       onDragCancel={handleDragCancel}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
+      autoScroll={{ acceleration: 0.5 }}
     >
       <div className="h-full min-w-fit pr-4">
         <div

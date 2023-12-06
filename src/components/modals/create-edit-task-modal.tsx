@@ -100,14 +100,14 @@ export default function CreateEditTaskModal({
   return (
     <Modal
       placement="center"
-      onClose={reset}
+      scrollBehavior="inside"
       isOpen={isOpen}
       onOpenChange={(value) => onOpenChange(isLoading ? true : value)}
       isDismissable={!isLoading}
       hideCloseButton={isLoading}
       classNames={{
-        wrapper: 'p-4 overflow-hidden',
-        base: 'max-w-[30rem] max-h-full overflow-y-auto',
+        wrapper: 'p-4',
+        base: 'max-w-[30rem] max-h-full !m-0',
       }}
     >
       <ModalContent>
@@ -118,7 +118,7 @@ export default function CreateEditTaskModal({
                 {isCreating ? 'Add New Task' : 'Edit Task'}
               </h2>
             </ModalHeader>
-            <ModalBody className="py-0">
+            <ModalBody className="overflow-hidden py-0">
               <form
                 id="create-edit-task-form"
                 className="flex flex-col gap-6 text-gray-100 dark:text-white"
@@ -168,11 +168,11 @@ export default function CreateEditTaskModal({
                     className="scrollbar-hidden h-[4.7rem] w-full resize-none rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 leading-[1.75] placeholder:text-gray-100/50 sm:h-[7rem]"
                   />
                 </label>
-                <fieldset className="scrollbar-hidden flex flex-col gap-3 overflow-hidden">
+                <fieldset className="flex max-h-60 flex-col gap-3 overflow-scroll">
                   <legend className="mb-2 text-xs font-bold md:text-sm">
                     Subtasks
                   </legend>
-                  <div className="scrollbar-hidden flex max-h-24 flex-col gap-3 overflow-y-auto overflow-x-hidden sm:max-h-48">
+                  <div className="flex flex-1 flex-col gap-3">
                     {columnFields.map((field, index) => (
                       <div
                         key={field.id}
@@ -186,7 +186,6 @@ export default function CreateEditTaskModal({
                         />
                         <Button
                           variant="icon"
-                          tabIndex={-1}
                           aria-label="delete column"
                           className="-mr-2 h-fit px-2 py-2"
                           isDisabled={columnFields.length === 1}
