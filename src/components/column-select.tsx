@@ -42,7 +42,8 @@ export default function ColumnSelect<TFieldValues extends FieldValues>({
           defaultSelectedKeys={[defaultSelectedKey]}
           disallowEmptySelection
           classNames={{
-            label: 'text-xs md:text-sm !text-gray-100 font-bold',
+            label:
+              'text-xs md:text-sm !text-gray-100 font-bold dark:!text-white',
             value: '!text-gray-100 text-base',
             trigger:
               'bg-transparent shadow-none border border-gray-100/25 p-0 min-h-fit h-fit px-4 py-2 rounded hover:!bg-gray-50 dark:hover:!bg-purple-100/25 transition-colors',

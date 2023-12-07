@@ -27,15 +27,15 @@ export default function ViewTaskModal({
       scrollBehavior="inside"
       classNames={{
         wrapper: 'p-4',
-        base: 'm-0 max-h-full',
+        base: '!m-0 max-h-full md:max-w-[32rem] md:max-h-[85%]',
       }}
     >
       <ModalContent>
-        <ModalHeader className="px-6 pb-0 pt-8">
+        <ModalHeader className="px-6 pb-6 pt-8 md:px-8">
           <h2>{task.title}</h2>
         </ModalHeader>
-        <ModalBody className="px-6 pb-8 pt-6">
-          <p className="text-xs leading-relaxed text-gray-100">
+        <ModalBody className="px-6 pb-8 pt-0 md:gap-6 md:px-8">
+          <p className="text-xs !leading-[1.75] text-gray-100 md:text-sm">
             {task.description}
           </p>
           <Form
@@ -83,7 +83,7 @@ function Form({ taskId, columnId, subtasks }: FormProps) {
             label={`Subtasks (${field.value.length}/${subtasks.length})`}
             classNames={{
               base: 'w-full',
-              label: 'text-xs font-bold',
+              label: 'text-xs md:text-sm font-bold dark:text-white',
             }}
           >
             {subtasks.map((subtask) => (
@@ -100,7 +100,7 @@ function Form({ taskId, columnId, subtasks }: FormProps) {
                 classNames={{
                   base: 'px-3 py-4 bg-gray-400 hover:bg-purple-100/25 transition-colors max-w-full rounded m-0 [&>:nth-child(2)]:after:bg-purple-100',
                   label:
-                    'text-xs font-bold group-data-[selected=true]:line-through group-data-[selected=true]:text-white/50',
+                    'text-xs md:text-sm font-bold group-data-[selected=true]:line-through group-data-[selected=true]:text-white/50',
                 }}
               >
                 {subtask.title}
