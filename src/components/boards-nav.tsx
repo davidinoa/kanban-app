@@ -15,7 +15,9 @@ export default function BoardsNav({
   className,
   ...props
 }: BoardsNavProps) {
-  const { data } = api.boards.getAllNames.useQuery()
+  const { data } = api.boards.getAllNames.useQuery(undefined, {
+    staleTime: Infinity,
+  })
   const pathname = usePathname()
 
   if (!data) return null

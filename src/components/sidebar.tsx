@@ -15,7 +15,9 @@ import ThemeSwitch from './theme-switch'
 
 export default function Sidebar() {
   const { isSidebarOpen, setIsSidebarOpen } = useAppStore()
-  const { data } = api.boards.getAllNames.useQuery()
+  const { data } = api.boards.getAllNames.useQuery(undefined, {
+    staleTime: Infinity,
+  })
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const initialOpenState = useRef(isSidebarOpen ? 'open' : 'closed')
@@ -33,7 +35,7 @@ export default function Sidebar() {
         initial={initialOpenState.current}
         animate={isSidebarOpen ? 'open' : 'closed'}
         variants={sidebarVariants}
-        className="overflow-auto dark:bg-gray-300 overflow-x-hidden"
+        className="overflow-auto overflow-x-hidden bg-white dark:bg-gray-300"
       >
         <div className="hidden h-full flex-col gap-6 border-r border-sky dark:border-gray-200  md:flex md:w-[16.25rem] lg:w-[18.75rem]">
           <div className="flex h-20 flex-shrink-0 items-center px-6 lg:h-24">

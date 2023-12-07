@@ -20,7 +20,9 @@ export default function DeleteBoardModal({
   onOpenChange,
 }: DeleteBoardModalProps) {
   const router = useRouter()
-  const boardNamesQuery = api.boards.getAllNames.useQuery()
+  const boardNamesQuery = api.boards.getAllNames.useQuery(undefined, {
+    staleTime: Infinity,
+  })
   const nextDefaultBoardId = boardNamesQuery?.data?.[1]?.id
   const board = useAppStore((state) => state.currentBoard)
   const { mutate, isLoading } = api.boards.delete.useMutation()

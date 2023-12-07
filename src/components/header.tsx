@@ -19,7 +19,7 @@ export default function Header() {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
 
   return (
-    <header className="z-40 flex h-16 min-w-fit items-center gap-2 border-b-1 border-sky px-4 pr-2 dark:border-gray-200 dark:bg-gray-300 md:h-20 md:gap-6 md:px-6 md:pr-4 lg:h-24 lg:gap-8">
+    <header className="z-40 flex h-16 min-w-fit items-center gap-2 border-b-1 border-sky bg-white px-4 pr-2 dark:border-gray-200 dark:bg-gray-300 md:h-20 md:gap-6 md:px-6 md:pr-4 lg:h-24 lg:gap-8">
       {!isSidebarOpen && (
         <>
           <LogoDark

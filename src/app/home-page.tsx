@@ -18,7 +18,7 @@ export default function HomePage({ boardId }: HomePageProps) {
 
   const currentBoardQuery = api.boards.getById.useQuery(
     { id: Number(boardId) },
-    { enabled: Boolean(boardId) && boardId !== 'new' },
+    { enabled: Boolean(boardId) && boardId !== 'new', staleTime: Infinity },
   )
 
   const setCurrentBoard = useAppStore((state) => state.setCurrentBoard)
