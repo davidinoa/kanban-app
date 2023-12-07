@@ -16,10 +16,12 @@ import {
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useEffect, useState } from 'react'
 import { type RouterOutputs } from '~/trpc/shared'
+import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
 import CreateColumnsModal from '../modals/create-columns-modal'
+import ViewTaskModal from '../modals/view-task-modal'
 import Column from './column'
-import Draggable from './draggable'
+import Draggable from './task'
 import { insertAtIndex, removeAtIndex } from './utils'
 
 type TaskGroups = Record<string, string[]>
@@ -60,6 +62,13 @@ export default function Board({ board }: BoardProps) {
   )
 
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
+
+  const viewingTaskId = useAppStore((state) => state.viewingTaskId)
+  const setViewingTaskId = useAppStore((state) => state.setViewingTaskId)
+  const taskQuery = api.tasks.get.useQuery(
+    { id: viewingTaskId! },
+    { enabled: Boolean(viewingTaskId), staleTime: Infinity },
+  )
 
   useEffect(() => setTaskGroups(transformBoardToTaskGroups(board)), [board])
 
@@ -197,6 +206,11 @@ export default function Board({ board }: BoardProps) {
           <Draggable taskId={activeTaskId} displayOverlay />
         ) : null}
       </DragOverlay>
+      <ViewTaskModal
+        isOpen={Boolean(viewingTaskId) && Boolean(taskQuery.data)}
+        onOpenChange={() => setViewingTaskId(undefined)}
+        task={taskQuery.data!}
+      />
     </DndContext>
   )
 }

@@ -3,17 +3,15 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card, CardBody } from '@nextui-org/card'
-import { useState } from 'react'
 import DragIcon from '~/assets/icon-drag.svg'
 import useAppStore from '~/zustand/app-store'
-import ViewTaskModal from '../modals/view-task-modal'
 
 type DraggableProps = {
   taskId: string
   displayOverlay?: boolean
 }
 
-export default function Draggable({
+export default function Task({
   taskId,
   displayOverlay = false,
 }: DraggableProps) {
@@ -28,9 +26,9 @@ export default function Draggable({
     id: taskId,
   })
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
   const board = useAppStore((state) => state.currentBoard)
+  const setViewingTaskId = useAppStore((state) => state.setViewingTaskId)
+
   if (!board) return null
 
   function findTaskInBoard(currentBoard: typeof board, id: number) {
@@ -57,7 +55,7 @@ export default function Draggable({
       <div className="relative">
         <Card
           isPressable
-          onPress={() => setIsModalOpen(true)}
+          onPress={() => setViewingTaskId(taskId)}
           classNames={{
             body: 'p-0 flex flex-col gap-2',
             base: `px-4 py-6 w-full relative`,
@@ -83,11 +81,6 @@ export default function Draggable({
           <DragIcon width={20} height={20} />
         </button>
       </div>
-      <ViewTaskModal
-        task={task}
-        isOpen={isModalOpen}
-        onOpenChange={setIsModalOpen}
-      />
     </li>
   )
 }

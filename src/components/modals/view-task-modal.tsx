@@ -19,6 +19,7 @@ export default function ViewTaskModal({
   isOpen,
   onOpenChange,
 }: ViewTaskModalProps) {
+  if (!isOpen) return null
   return (
     <Modal
       isOpen={isOpen}
@@ -35,9 +36,11 @@ export default function ViewTaskModal({
           <h2>{task.title}</h2>
         </ModalHeader>
         <ModalBody className="px-6 pb-8 pt-0 md:gap-6 md:px-8">
-          <p className="text-xs !leading-[1.75] text-gray-100 md:text-sm">
-            {task.description}
-          </p>
+          {task.description ? (
+            <p className="text-xs !leading-[1.75] text-gray-100 md:text-sm">
+              {task.description}
+            </p>
+          ) : null}
           <Form
             taskId={task.id}
             columnId={task.columnId}
@@ -91,10 +94,21 @@ function Form({ taskId, columnId, subtasks }: FormProps) {
                 key={subtask.id}
                 value={subtask.id.toString()}
                 onChange={(e) => {
-                  subtaskUpdateMutation.mutate({
-                    id: subtask.id,
-                    isCompleted: e.target.checked,
-                  })
+                  subtaskUpdateMutation.mutate(
+                    {
+                      id: subtask.id,
+                      isCompleted: e.target.checked,
+                    },
+                    {
+                      onSuccess: () => {
+                        apiUtils.boards.getById
+                          .invalidate()
+                          .catch(() =>
+                            toast.error('Failed to update subtask status'),
+                          )
+                      },
+                    },
+                  )
                 }}
                 checked={field.value.includes(subtask.id.toString())}
                 classNames={{

@@ -95,6 +95,45 @@ const tasksRouter = createTRPCRouter({
         })
       }
     }),
+
+  get: privateProcedure
+    .input(
+      z.object({
+        id: z
+          .union([z.string(), z.number()])
+          .transform((value) => Number(value))
+          .refine(
+            (value) => !Number.isNaN(value),
+            "Couldn't parse the task id",
+          ),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { db, userId } = ctx
+      const { id } = input
+
+      try {
+        const targetTask = await db.task.findUnique({
+          where: { id, Column: { Board: { userId } } },
+          include: { subtasks: true },
+        })
+
+        if (!targetTask) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Task not found or does not belong to the user',
+          })
+        }
+
+        return targetTask
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Could not get task',
+          cause: error instanceof Error ? error : undefined,
+        })
+      }
+    }),
 })
 
 export default tasksRouter

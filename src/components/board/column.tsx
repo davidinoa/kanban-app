@@ -1,7 +1,7 @@
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import { type RouterOutputs } from '~/trpc/shared'
-import Draggable from './draggable'
+import Task from './task'
 
 type ColumnProps = {
   column: RouterOutputs['boards']['getById']['columns'][0]
@@ -27,7 +27,7 @@ export default function Column({ taskIds, column }: ColumnProps) {
           className="scrollbar-hidden flex grow flex-col gap-5 overflow-auto rounded-md p-4 dark:bg-gray-300/25"
         >
           {taskIds.map((taskId) => (
-            <Draggable key={taskId} taskId={taskId} />
+            <Task key={taskId} taskId={taskId} />
           ))}
         </ul>
       </SortableContext>
