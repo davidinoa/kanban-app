@@ -1,4 +1,5 @@
 import { ClerkProvider, SignedIn, SignedOut } from '@clerk/nextjs'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import { cookies } from 'next/headers'
 import { type PropsWithChildren } from 'react'
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
             </Providers>
           </TRPCReactProvider>
         </ClerkProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
