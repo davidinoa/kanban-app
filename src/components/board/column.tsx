@@ -24,7 +24,7 @@ export default function Column({ taskIds, column }: ColumnProps) {
       >
         <ul
           ref={setNodeRef}
-          className="scrollbar-hidden flex grow flex-col gap-5 overflow-auto rounded-md p-4 dark:bg-gray-300/25"
+          className="scrollbar-hidden flex grow flex-col gap-5 overflow-auto rounded-md bg-sky/50 p-4 dark:bg-gray-300/25"
         >
           {taskIds.map((taskId) => (
             <Task key={taskId} taskId={taskId} />

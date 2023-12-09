@@ -1,31 +1,30 @@
 import { Checkbox, CheckboxGroup } from '@nextui-org/checkbox'
 import { Modal, ModalBody, ModalContent, ModalHeader } from '@nextui-org/modal'
+import { Spinner } from '@nextui-org/spinner'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { api, type RouterOutputs } from '~/utils/api'
+import useAppStore from '~/zustand/app-store'
 import ColumnSelect from '../column-select'
 import TaskActionsPopover from '../task-actions-popover'
 
-type Task =
-  RouterOutputs['boards']['getById']['columns'][number]['tasks'][number]
+export default function ViewTaskModal() {
+  const { viewingTaskId, setViewingTaskId } = useAppStore((s) => ({
+    viewingTaskId: s.viewingTaskId,
+    setViewingTaskId: s.setViewingTaskId,
+  }))
+  const isOpen = Boolean(viewingTaskId)
+  const { data: task, isLoading } = api.tasks.get.useQuery(
+    { id: viewingTaskId! },
+    { enabled: isOpen, staleTime: Infinity },
+  )
 
-type ViewTaskModalProps = {
-  task: Task
-  isOpen: boolean
-  onOpenChange: (isOpen: boolean) => void
-}
-
-export default function ViewTaskModal({
-  task,
-  isOpen,
-  onOpenChange,
-}: ViewTaskModalProps) {
   if (!isOpen) return null
 
   return (
     <Modal
       isOpen={isOpen}
-      onOpenChange={onOpenChange}
+      onOpenChange={(open) => !open && setViewingTaskId(undefined)}
       placement="center"
       scrollBehavior="inside"
       classNames={{
@@ -34,22 +33,36 @@ export default function ViewTaskModal({
       }}
     >
       <ModalContent>
-        <ModalHeader className="items-center gap-4 px-6 pb-6 pr-4 pt-8 md:px-8">
-          <h2 className="grow">{task.title}</h2>
-          <TaskActionsPopover />
-        </ModalHeader>
-        <ModalBody className="px-6 pb-8 pt-0 md:gap-6 md:px-8">
-          {task.description ? (
-            <p className="text-xs !leading-[1.75] text-gray-100 md:text-sm">
-              {task.description}
-            </p>
-          ) : null}
-          <Form
-            taskId={task.id}
-            columnId={task.columnId}
-            subtasks={task.subtasks}
-          />
-        </ModalBody>
+        {task && (
+          <>
+            <ModalHeader className="items-center gap-4 px-6 pb-6 pr-4 pt-8 md:px-8">
+              <h2 className="grow">{task.title}</h2>
+              <TaskActionsPopover />
+            </ModalHeader>
+            <ModalBody className="px-6 pb-8 pt-0 md:gap-6 md:px-8">
+              {task.description ? (
+                <p className="text-xs !leading-[1.75] text-gray-100 md:text-sm">
+                  {task.description}
+                </p>
+              ) : null}
+              <Form
+                taskId={task.id}
+                columnId={task.columnId}
+                subtasks={task.subtasks}
+              />
+            </ModalBody>
+          </>
+        )}
+        {isLoading && (
+          <div className="place-items-centers grid h-full min-h-[10rem] w-full">
+            <Spinner
+              classNames={{
+                circle1: 'border-b-purple-100',
+                circle2: 'border-b-purple-100',
+              }}
+            />
+          </div>
+        )}
       </ModalContent>
     </Modal>
   )
@@ -58,7 +71,7 @@ export default function ViewTaskModal({
 type FormProps = {
   taskId: number
   columnId: number
-  subtasks: Task['subtasks']
+  subtasks: RouterOutputs['tasks']['get']['subtasks']
 }
 
 function Form({ taskId, columnId, subtasks }: FormProps) {
@@ -116,9 +129,9 @@ function Form({ taskId, columnId, subtasks }: FormProps) {
                   }}
                   checked={field.value.includes(subtask.id.toString())}
                   classNames={{
-                    base: 'px-3 py-4 bg-gray-400 hover:bg-purple-100/25 transition-colors max-w-full rounded m-0 [&>:nth-child(2)]:after:bg-purple-100',
+                    base: 'px-3 py-4 bg-gray-50 dark:bg-gray-400 hover:bg-purple-100/25 transition-colors max-w-full rounded m-0 [&>:nth-child(2)]:after:bg-purple-100',
                     label:
-                      'text-xs md:text-sm font-bold group-data-[selected=true]:line-through group-data-[selected=true]:text-white/50',
+                      'text-xs md:text-sm font-bold group-data-[selected=true]:line-through dark:group-data-[selected=true]:text-white/50 group-data-[selected=true]:text-black/50',
                   }}
                 >
                   {subtask.title}
