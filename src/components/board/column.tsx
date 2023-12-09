@@ -16,7 +16,9 @@ export default function Column({ taskIds, column }: ColumnProps) {
       key={columnId}
       className="flex max-h-full flex-col overflow-hidden"
     >
-      <h3 className="mb-6">{column.name}</h3>
+      <h3 className="mb-6 pl-1 text-xs font-bold uppercase tracking-widest text-gray-100 md:text-sm">
+        {column.name} ({taskIds.length})
+      </h3>
       <SortableContext
         id={columnId}
         items={taskIds}

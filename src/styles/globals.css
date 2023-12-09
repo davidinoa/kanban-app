@@ -63,3 +63,11 @@ main {
 .scrollbar-hidden:hover::-webkit-scrollbar-thumb {
   @apply bg-gray-100;
 }
+
+.column-container {
+  grid-auto-columns: 15.5rem;
+
+  @media (min-width: 640px) {
+    grid-auto-columns: 19.5rem;
+  }
+}

@@ -58,23 +58,26 @@ export default function Task({
           onPress={() => setViewingTaskId(taskId)}
           classNames={{
             body: 'p-0 flex flex-col gap-2',
-            base: `px-4 py-6 w-full relative`,
+            base: `px-4 py-6 pr-8 w-full relative`,
           }}
         >
           <CardBody>
-            <p className="font-bold leading-tight">{task.title}</p>
-            <span className="text-xs">
-              {task.subtasks.filter((s) => s.isCompleted).length} of{' '}
-              {task.subtasks.length} subtasks
-            </span>
+            <p className="text-sm font-bold leading-tight md:text-base">
+              {task.title}
+            </p>
+            {task.subtasks.length > 0 && (
+              <span className="hidden text-xs font-bold text-gray-100 md:block">
+                {task.subtasks.filter((s) => s.isCompleted).length} of{' '}
+                {task.subtasks.length} subtasks
+              </span>
+            )}
           </CardBody>
         </Card>
         <button
           type="button"
-          style={{ position: 'absolute' }}
           className={`${
             displayOverlay ? 'cursor-grabbing' : 'cursor-grab'
-          } right-2 top-6`}
+          } absolute right-2 top-1/2 z-10 translate-y-[-50%]`}
           {...attributes}
           {...listeners}
         >

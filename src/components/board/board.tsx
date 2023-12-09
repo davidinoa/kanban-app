@@ -179,10 +179,7 @@ export default function Board({ board }: BoardProps) {
       autoScroll={{ acceleration: 0.5 }}
     >
       <div className="h-full min-w-fit pr-4">
-        <div
-          className="grid h-full grid-flow-col gap-6 p-6"
-          style={{ gridAutoColumns: '19.5rem' }}
-        >
+        <div className="column-container grid h-full grid-flow-col gap-6 p-6">
           {board.columns.map((column) => (
             <Column
               key={column.id}
