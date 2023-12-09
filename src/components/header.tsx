@@ -1,6 +1,5 @@
 'use client'
 
-import { SignOutButton } from '@clerk/nextjs'
 import { Divider } from '@nextui-org/divider'
 import { useState } from 'react'
 import AddTaskIcon from '~/assets/icon-add-task-mobile.svg'
@@ -49,7 +48,7 @@ export default function Header() {
               size="large"
               disabled={!board}
               className="hidden px-6 md:inline-block"
-              onClick={() => setIsTaskModalOpen(true)}
+              onPress={() => setIsTaskModalOpen(true)}
             >
               + Add New Task
             </Button>
@@ -57,7 +56,7 @@ export default function Header() {
               aria-label="add new task"
               disabled={!board}
               className="px-5 py-2.5 md:hidden"
-              onClick={() => setIsTaskModalOpen(true)}
+              onPress={() => setIsTaskModalOpen(true)}
             >
               <AddTaskIcon />
             </Button>
@@ -70,8 +69,6 @@ export default function Header() {
           </div>
         </>
       ) : null}
-
-      <SignOutButton />
     </header>
   )
 }

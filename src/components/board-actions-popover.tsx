@@ -1,5 +1,6 @@
 'use client'
 
+import { SignOutButton } from '@clerk/nextjs'
 import {
   Button as NextUiButton,
   Popover,
@@ -61,6 +62,9 @@ export default function BoardActionsPopover() {
           >
             Delete Board
           </Button>
+          <div className="px-4 py-2">
+            <SignOutButton />
+          </div>
         </PopoverContent>
       </Popover>
       <CreateEditBoardModal

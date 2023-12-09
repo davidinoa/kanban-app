@@ -28,7 +28,7 @@ export default function TaskActionsPopover() {
         <PopoverTrigger>
           <NextUiButton
             isIconOnly
-            aria-label="board actions"
+            aria-label="task actions"
             className={twMerge(buttonStyles({ variant: 'icon' }), 'h-fit p-2')}
           >
             <VerticalEllipsisIcon viewBox="0 0 5 20" />
