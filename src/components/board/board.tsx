@@ -208,7 +208,7 @@ export default function Board({ board }: BoardProps) {
       </DragOverlay>
       <ViewTaskModal
         isOpen={Boolean(viewingTaskId) && Boolean(taskQuery.data)}
-        onOpenChange={() => setViewingTaskId(undefined)}
+        onOpenChange={(isOpen) => !isOpen && setViewingTaskId(undefined)}
         task={taskQuery.data!}
       />
     </DndContext>

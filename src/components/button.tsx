@@ -3,7 +3,7 @@ import {
   type ButtonProps as NextUiButtonProps,
 } from '@nextui-org/button'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { forwardRef } from 'react'
+import { forwardRef, type Ref } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 export const buttonStyles = cva(
@@ -75,11 +75,12 @@ type ButtonProps = VariantProps<typeof buttonStyles> &
 
 function BaseButton(
   { variant, size, children, className, ...props }: ButtonProps,
-  _ref: unknown,
+  ref: Ref<HTMLButtonElement | null> | undefined,
 ) {
   return (
     <NextUiButton
       {...props}
+      ref={ref}
       isIconOnly={variant === 'icon'}
       className={twMerge(buttonStyles({ variant, size }), className)}
     >

@@ -134,6 +134,48 @@ const tasksRouter = createTRPCRouter({
         })
       }
     }),
+
+  delete: privateProcedure
+    .input(
+      z.object({
+        id: z
+          .union([z.string(), z.number()])
+          .transform((value) => Number(value))
+          .refine(
+            (value) => !Number.isNaN(value),
+            "Couldn't parse the task id",
+          ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { db, userId } = ctx
+      const { id } = input
+
+      try {
+        const targetTask = await db.task.findUnique({
+          where: { id, Column: { Board: { userId } } },
+        })
+
+        if (!targetTask) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Task not found or does not belong to the user',
+          })
+        }
+
+        await db.task.delete({
+          where: { id },
+        })
+
+        return { message: 'Task and its subtasks successfully deleted' }
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Could not delete task',
+          cause: error instanceof Error ? error : undefined,
+        })
+      }
+    }),
 })
 
 export default tasksRouter
