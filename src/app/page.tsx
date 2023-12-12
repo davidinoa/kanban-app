@@ -1,6 +1,7 @@
-import { SignIn, auth } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs'
 import { type Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import DemoLogin from '~/components/demo-login'
 import api from '~/trpc/server'
 
 export const metadata: Metadata = {
@@ -12,7 +13,8 @@ export default async function Page() {
   if (!userId) {
     return (
       <div className="grid h-screen w-screen place-items-center dark:bg-gray-200">
-        <SignIn />
+        {/* <SignIn /> */}
+        <DemoLogin />
       </div>
     )
   }

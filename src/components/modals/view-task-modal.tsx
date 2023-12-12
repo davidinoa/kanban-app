@@ -103,7 +103,8 @@ function Form({ taskId, columnId, subtasks }: FormProps) {
               label={`Subtasks (${field.value.length}/${subtasks.length})`}
               classNames={{
                 base: 'w-full',
-                label: 'text-xs md:text-sm font-bold dark:text-white',
+                label:
+                  'text-xs md:text-sm font-bold dark:text-white tabular-nums',
               }}
             >
               {subtasks.map((subtask) => (

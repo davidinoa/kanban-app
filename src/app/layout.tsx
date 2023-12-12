@@ -23,19 +23,19 @@ export default function RootLayout({ children }: PropsWithChildren) {
       className={plusJakartaSans.className}
       suppressHydrationWarning
     >
-      <body>
+      <body suppressHydrationWarning>
         <ClerkProvider>
           <TRPCReactProvider cookies={cookies().toString()}>
             <Providers>
               <SignedIn>
-                <Toaster
-                  toastOptions={{
-                    className: 'dark:bg-gray-200 dark:text-white',
-                  }}
-                />
                 <Layout>{children}</Layout>
               </SignedIn>
               <SignedOut>{children}</SignedOut>
+              <Toaster
+                toastOptions={{
+                  className: 'dark:bg-gray-200 dark:text-white',
+                }}
+              />
             </Providers>
           </TRPCReactProvider>
         </ClerkProvider>
