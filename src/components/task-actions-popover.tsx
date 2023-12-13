@@ -6,14 +6,22 @@ import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import VerticalEllipsisIcon from '~/assets/icon-vertical-ellipsis.svg'
 import Button, { buttonStyles } from './button'
+import CreateEditTaskModal from './modals/create-edit-task-modal'
 import DeleteTaskModal from './modals/delete-task-modal'
 
 type Status = 'closed' | 'idle' | 'editing' | 'deleting'
 
-export default function TaskActionsPopover() {
+type TaskActionsPopoverProps = {
+  taskId: number
+}
+
+export default function TaskActionsPopover({
+  taskId,
+}: TaskActionsPopoverProps) {
   const [status, setStatus] = useState<Status>('closed')
   const isPopoverOpen = status === 'idle'
   const isDeleting = status === 'deleting'
+  const isEditing = status === 'editing'
 
   return (
     <>
@@ -42,8 +50,19 @@ export default function TaskActionsPopover() {
           >
             Delete Task
           </Button>
+          <Button variant="ghost" onPress={() => setStatus('editing')}>
+            edit
+          </Button>
         </PopoverContent>
       </Popover>
+      <CreateEditTaskModal
+        mode="edit"
+        isOpen={isEditing}
+        taskId={taskId}
+        onOpenChange={(isOpen: boolean) =>
+          setStatus(isOpen ? 'editing' : 'closed')
+        }
+      />
       <DeleteTaskModal
         isOpen={isDeleting}
         onOpenChange={(isOpen: boolean) =>

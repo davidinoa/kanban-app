@@ -37,7 +37,7 @@ export default function ViewTaskModal() {
           <>
             <ModalHeader className="items-center gap-4 px-6 pb-6 pr-4 pt-8 md:px-8">
               <h2 className="grow">{task.title}</h2>
-              <TaskActionsPopover />
+              <TaskActionsPopover taskId={task.id} />
             </ModalHeader>
             <ModalBody className="px-6 pb-8 pt-0 md:gap-6 md:px-8">
               {task.description ? (
@@ -155,6 +155,7 @@ function Form({ taskId, columnId, subtasks }: FormProps) {
               onSuccess: () => {
                 apiUtils.boards.getById
                   .invalidate()
+                  .then(() => apiUtils.tasks.get.invalidate())
                   .catch(() => toast.error('Failed to update task status'))
               },
             },

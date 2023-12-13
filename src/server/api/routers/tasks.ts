@@ -63,7 +63,7 @@ const tasksRouter = createTRPCRouter({
       z.object({
         id: z.number(),
         title: z.string().optional(),
-        description: z.string().optional(),
+        description: z.string().nullable().optional(),
         columnId: z.number().optional(),
       }),
     )

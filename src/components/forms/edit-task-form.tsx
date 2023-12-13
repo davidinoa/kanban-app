@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { z } from 'zod'
 import CrossIcon from '~/assets/icon-cross.svg'
 import { api, type RouterOutputs } from '~/utils/api'
@@ -9,31 +10,20 @@ import ColumnSelect from '../column-select'
 
 const maxTitleLength = 255
 const maxDescriptionLength = 5_000
-
 const titleTooLongMessage = `Title must be at most ${maxTitleLength} characters long`
 
-const subtaskSchema = z.union([
-  z.object({
-    subtaskId: z.string().optional(),
-    subtaskTitle: z
-      .string()
-      .max(maxTitleLength, titleTooLongMessage)
-      .optional(),
-  }),
-  z.object({
-    subtaskTitle: z
-      .string()
-      .max(maxTitleLength, titleTooLongMessage)
-      .optional(),
-  }),
-])
+const subtaskSchema = z.object({
+  subtaskId: z.number().optional(),
+  subtaskTitle: z.string().max(maxTitleLength, titleTooLongMessage).optional(),
+})
 
 const formSchema = z.object({
+  taskId: z.number(),
   taskTitle: z
     .string()
     .min(1, 'Task title is required')
     .max(maxTitleLength, titleTooLongMessage),
-  description: z.string().max(maxDescriptionLength).optional(),
+  description: z.string().max(maxDescriptionLength).nullable().optional(),
   subtasks: z.array(subtaskSchema),
   columnId: z.string(),
 })
@@ -46,34 +36,33 @@ type FormState = {
   isDirty: boolean
 }
 
-type CreateTaskFormProps = {
-  board: RouterOutputs['boards']['getById']
-  onClose: () => void
+type EditTaskFormProps = {
+  task: RouterOutputs['tasks']['get']
   onFormStateChange: (state: FormState) => void
+  onClose: () => void
 }
 
-export default function CreateTaskForm({
-  board,
-  onClose,
+export default function EditTaskForm({
+  task,
   onFormStateChange,
-}: CreateTaskFormProps) {
+  onClose,
+}: EditTaskFormProps) {
   const apiUtils = api.useUtils()
-  const createMutation = api.tasks.create.useMutation()
-  const { isLoading } = createMutation
+  const editMutation = api.tasks.update.useMutation()
 
-  const { register, handleSubmit, formState, reset, control } =
-    useForm<FormValues>({
-      resolver: zodResolver(formSchema),
-      defaultValues: {
-        taskTitle: '',
-        description: '',
-        subtasks: [{ subtaskTitle: '' }],
-        // TODO: fix this - columns[0] should always exist here
-        columnId: board.columns[0]?.id.toString() ?? '',
-      },
-    })
-
-  const onFormStateChangeRef = useRef(onFormStateChange)
+  const { control, formState, handleSubmit, register } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      taskId: task.id,
+      taskTitle: task.title,
+      description: task.description,
+      subtasks: task.subtasks.map((subtask) => ({
+        subtaskId: subtask.id,
+        subtaskTitle: subtask.title,
+      })),
+      columnId: task.columnId.toString(),
+    },
+  })
 
   const {
     fields: columnFields,
@@ -84,41 +73,42 @@ export default function CreateTaskForm({
     control,
   })
 
+  const onFormStateChangeRef = useRef(onFormStateChange)
+  const { isValid, isDirty } = formState
+  const { isLoading } = editMutation
   useEffect(() => {
     onFormStateChangeRef.current?.({
       isLoading,
-      isValid: formState.isValid,
-      isDirty: formState.isDirty,
+      isValid,
+      isDirty,
     })
-  }, [formState.isDirty, formState.isValid, isLoading])
+  }, [isLoading, isValid, isDirty])
 
   return (
     <form
-      id="create-task-form"
-      className="flex flex-col gap-6 text-gray-100 dark:text-white py-2"
-      onSubmit={handleSubmit((data) => {
-        const { taskTitle, description, subtasks, columnId } = data
-
-        const payload = {
-          taskTitle,
-          description,
-          columnId: Number(columnId),
-          subtasks: subtasks.filter((c): c is { subtaskTitle: string } =>
-            Boolean(c.subtaskTitle),
-          ),
-        }
-
-        return createMutation.mutate(payload, {
-          onSuccess: () => {
-            apiUtils.boards.getById
-              .invalidate()
-              .then(() => {
-                reset()
-                onClose()
-              })
-              .catch(() => undefined)
+      id="edit-task-form"
+      className="flex flex-col gap-6 py-2 text-gray-100 dark:text-white"
+      onSubmit={handleSubmit((values) => {
+        editMutation.mutate(
+          {
+            id: values.taskId,
+            title: values.taskTitle,
+            description: values.description,
+            columnId: Number(values.columnId),
           },
-        })
+          {
+            onError: (error) => {
+              toast.error(error.message)
+            },
+            onSuccess: () => {
+              apiUtils.tasks.get
+                .invalidate()
+                .then(() => toast.success('Task updated'))
+                .then(() => onClose())
+                .catch(() => toast.error('Failed to update task'))
+            },
+          },
+        )
       })}
     >
       <label className="flex flex-col gap-2">
@@ -139,7 +129,7 @@ export default function CreateTaskForm({
           className="scrollbar-hidden h-[4.7rem] w-full resize-none rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 leading-[1.75] placeholder:text-gray-100/50 sm:h-[7rem]"
         />
       </label>
-      <fieldset className="flex max-h-60 flex-col gap-3 overflow-scroll">
+      <fieldset className="flex flex-col gap-3 overflow-hidden pr-1">
         <legend className="mb-2 text-xs font-bold md:text-sm">Subtasks</legend>
         <div className="flex flex-1 flex-col gap-3">
           {columnFields.map((field, index) => (
@@ -162,22 +152,17 @@ export default function CreateTaskForm({
             </div>
           ))}
         </div>
-        <Button
-          variant="secondary"
-          className="w-full flex-shrink-0"
-          onPress={() => append({ subtaskTitle: '' })}
-        >
-          + Add New Subtask
-        </Button>
+        <div className="px-1 pb-1">
+          <Button
+            variant="secondary"
+            className="w-full flex-shrink-0"
+            onPress={() => append({ subtaskTitle: '' })}
+          >
+            + Add New Subtask
+          </Button>
+        </div>
       </fieldset>
       <ColumnSelect control={control} name="columnId" />
     </form>
   )
 }
-
-/**
- * TODOS:
- * - Display errors to the users
- * - Disable input after reaching limit
- * - Cleanup submit handler
- */
