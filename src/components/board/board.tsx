@@ -176,7 +176,10 @@ export default function Board({ board }: BoardProps) {
       onDragCancel={handleDragCancel}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
-      autoScroll={{ acceleration: 0.5 }}
+      autoScroll={{
+        acceleration: 1.5,
+        layoutShiftCompensation: true,
+      }}
     >
       <div className="h-full min-w-fit pr-4">
         <div className="column-container grid h-full grid-flow-col gap-6 p-6">

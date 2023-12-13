@@ -54,7 +54,7 @@ export default function ViewTaskModal() {
           </>
         )}
         {isLoading && (
-          <div className="place-items-centers grid h-full min-h-[10rem] w-full">
+          <div className="place-items-centers grid h-[10rem] w-full">
             <Spinner
               classNames={{
                 circle1: 'border-b-purple-100',

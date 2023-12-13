@@ -6,7 +6,7 @@ import Sidebar from './sidebar'
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <div className="layout-container h-[100svh] overflow-hidden">
+    <div className="layout-container h-[100vh] overflow-hidden">
       <Header />
       <Sidebar />
       <main className="scrollbar-hidden p4 min-w-[300px] overflow-auto bg-gray-50 dark:bg-gray-400">
