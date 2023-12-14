@@ -149,7 +149,7 @@ const tasksRouter = createTRPCRouter({
           const subtaskIdsToKeep = [...newSubtaskIds, ...subtaskIdsToUpdate]
 
           // Delete subtasks not included in the update
-          if (subtasks?.length) {
+          if (subtasks) {
             await prisma.subtask.deleteMany({
               where: {
                 taskId: id,

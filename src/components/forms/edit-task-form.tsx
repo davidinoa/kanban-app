@@ -50,22 +50,23 @@ export default function EditTaskForm({
   const apiUtils = api.useUtils()
   const editMutation = api.tasks.update.useMutation()
 
-  const { control, formState, handleSubmit, register } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      taskId: task.id,
-      taskTitle: task.title,
-      description: task.description,
-      subtasks: task.subtasks.map((subtask) => ({
-        subtaskId: subtask.id,
-        subtaskTitle: subtask.title,
-      })),
-      columnId: task.columnId.toString(),
-    },
-  })
+  const { control, formState, handleSubmit, register, watch } =
+    useForm<FormValues>({
+      resolver: zodResolver(formSchema),
+      defaultValues: {
+        taskId: task.id,
+        taskTitle: task.title,
+        description: task.description,
+        subtasks: task.subtasks.map((subtask) => ({
+          subtaskId: subtask.id,
+          subtaskTitle: subtask.title,
+        })),
+        columnId: task.columnId.toString(),
+      },
+    })
 
   const {
-    fields: columnFields,
+    fields: subtaskFields,
     append,
     remove,
   } = useFieldArray({
@@ -137,7 +138,7 @@ export default function EditTaskForm({
       <fieldset className="flex flex-col gap-3 overflow-hidden pr-1">
         <legend className="mb-2 text-xs font-bold md:text-sm">Subtasks</legend>
         <div className="flex flex-1 flex-col gap-3">
-          {columnFields.map((field, index) => (
+          {subtaskFields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-2 pr-2">
               <input
                 type="text"
@@ -149,7 +150,6 @@ export default function EditTaskForm({
                 variant="icon"
                 aria-label="delete column"
                 className="-mr-2 h-fit px-2 py-2"
-                isDisabled={columnFields.length === 1}
                 onPress={() => remove(index)}
               >
                 <CrossIcon />
@@ -161,6 +161,7 @@ export default function EditTaskForm({
           <Button
             variant="secondary"
             className="w-full flex-shrink-0"
+            isDisabled={watch('subtasks')?.at(-1)?.subtaskTitle === ''}
             onPress={() => append({ subtaskTitle: '' })}
           >
             + Add New Subtask
