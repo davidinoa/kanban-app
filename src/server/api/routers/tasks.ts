@@ -70,14 +70,14 @@ const tasksRouter = createTRPCRouter({
   update: privateProcedure
     .input(
       z.object({
-        id: idSchema,
+        id: z.number(),
         title: z.string().optional(),
         description: z.string().nullable().optional(),
         columnId: z.number().optional(),
         subtasks: z
           .array(
             z.object({
-              subtaskId: idSchema.optional(),
+              subtaskId: idSchema.optional(), // Renamed from id to subtaskId
               subtaskTitle: z.string(),
               isCompleted: z.boolean().optional().default(false),
             }),
@@ -89,74 +89,77 @@ const tasksRouter = createTRPCRouter({
       const { db, userId } = ctx
       const { id, title, description, columnId, subtasks } = input
 
-      try {
-        const targetTask = await db.task.findUnique({
-          where: { id, Column: { Board: { userId } } },
-          include: { subtasks: true },
-        })
+      return db.$transaction(async (prisma) => {
+        try {
+          const targetTask = await prisma.task.findUnique({
+            where: { id, Column: { Board: { userId } } },
+            include: { subtasks: true },
+          })
 
-        if (!targetTask) {
+          if (!targetTask) {
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: 'Task not found or does not belong to the user',
+            })
+          }
+
+          const updatedTask = await prisma.task.update({
+            where: { id },
+            data: { title, description, columnId },
+          })
+
+          // Update and create subtasks
+          await Promise.all(
+            subtasks?.map(async (subtask) => {
+              if (subtask.subtaskId) {
+                // Update existing subtask
+                await prisma.subtask.update({
+                  where: { id: subtask.subtaskId },
+                  data: {
+                    title: subtask.subtaskTitle,
+                    isCompleted: subtask.isCompleted,
+                  },
+                })
+              } else {
+                // Create new subtask
+                await prisma.subtask.create({
+                  data: {
+                    title: subtask.subtaskTitle,
+                    taskId: id,
+                    isCompleted: subtask.isCompleted,
+                  },
+                })
+              }
+            }) ?? [],
+          )
+
+          // Filter out undefined values from subtask IDs
+          const subtaskIdsToUpdate =
+            subtasks
+              ?.map((subtask) => subtask.subtaskId)
+              .filter(
+                (subtaskId): subtaskId is number => subtaskId !== undefined,
+              ) ?? []
+
+          // Delete subtasks not included in the update
+          await prisma.subtask.deleteMany({
+            where: {
+              taskId: id,
+              NOT: {
+                id: { in: subtaskIdsToUpdate },
+              },
+            },
+          })
+
+          return updatedTask
+        } catch (error) {
           throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Task not found or does not belong to the user',
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Could not update task',
+            cause: error instanceof Error ? error : undefined,
           })
         }
-
-        const updatedTask = await db.task.update({
-          where: { id },
-          data: { title, description, columnId },
-        })
-
-        // Update and create subtasks
-        await Promise.all(
-          subtasks?.map(async (subtask) => {
-            if (subtask.subtaskId) {
-              // Update existing subtask
-              await db.subtask.update({
-                where: { id: subtask.subtaskId },
-                data: {
-                  title: subtask.subtaskTitle,
-                  isCompleted: subtask.isCompleted,
-                },
-              })
-            } else {
-              // Create new subtask
-              await db.subtask.create({
-                data: {
-                  title: subtask.subtaskTitle,
-                  taskId: id,
-                  isCompleted: false,
-                },
-              })
-            }
-          }) ?? [],
-        )
-
-        // Delete subtasks not included in the update
-        const subtaskIdsToUpdate =
-          subtasks
-            ?.map(({ subtaskId }) => subtaskId)
-            .filter(
-              (subtaskId): subtaskId is number => subtaskId !== undefined,
-            ) ?? []
-
-        await db.subtask.deleteMany({
-          where: {
-            taskId: id,
-            NOT: {
-              id: { in: subtaskIdsToUpdate },
-            },
-          },
-        })
-
-        return updatedTask
-      } catch (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Could not update task',
-          cause: error instanceof Error ? error : undefined,
-        })
-      }
+      })
     }),
 
   get: privateProcedure
