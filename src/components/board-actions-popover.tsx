@@ -57,7 +57,7 @@ export default function BoardActionsPopover() {
           </Button>
           <Button
             variant="ghost"
-            className="w-full justify-start rounded-l-none rounded-r-full px-4 text-red-100 data-[focus-visible=true]:bg-red-100 data-[hover=true]:bg-red-100 data-[focus-visible=true]:text-white data-[hover=true]:text-white"
+            className="w-full justify-start rounded-l-none rounded-r-full px-4 text-red-100 data-[focus-visible=true]:bg-red-100 data-[hover=true]:bg-red-100 data-[focus-visible=true]:text-white data-[hover=true]:text-white dark:data-[hover=true]:bg-red-100"
             onClick={() => setStatus('deleteModalOpen')}
           >
             Delete Board
