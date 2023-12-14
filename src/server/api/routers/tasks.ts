@@ -2,6 +2,15 @@ import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { createTRPCRouter, privateProcedure } from '~/server/api/trpc'
 
+// Define a separate schema for ID validation
+const idSchema = z
+  .union([z.string(), z.number()])
+  .transform((value) => Number(value))
+  .refine(
+    (value) => !Number.isNaN(value),
+    "Invalid 'id': must be a number or a string representing a number.",
+  )
+
 const tasksRouter = createTRPCRouter({
   create: privateProcedure
     .input(
@@ -61,19 +70,29 @@ const tasksRouter = createTRPCRouter({
   update: privateProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: idSchema,
         title: z.string().optional(),
         description: z.string().nullable().optional(),
         columnId: z.number().optional(),
+        subtasks: z
+          .array(
+            z.object({
+              subtaskId: idSchema.optional(),
+              subtaskTitle: z.string(),
+              isCompleted: z.boolean().optional().default(false),
+            }),
+          )
+          .optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const { db, userId } = ctx
-      const { id, title, description, columnId } = input
+      const { id, title, description, columnId, subtasks } = input
 
       try {
         const targetTask = await db.task.findUnique({
           where: { id, Column: { Board: { userId } } },
+          include: { subtasks: true },
         })
 
         if (!targetTask) {
@@ -83,10 +102,54 @@ const tasksRouter = createTRPCRouter({
           })
         }
 
-        return await db.task.update({
+        const updatedTask = await db.task.update({
           where: { id },
           data: { title, description, columnId },
         })
+
+        // Update and create subtasks
+        await Promise.all(
+          subtasks?.map(async (subtask) => {
+            if (subtask.subtaskId) {
+              // Update existing subtask
+              await db.subtask.update({
+                where: { id: subtask.subtaskId },
+                data: {
+                  title: subtask.subtaskTitle,
+                  isCompleted: subtask.isCompleted,
+                },
+              })
+            } else {
+              // Create new subtask
+              await db.subtask.create({
+                data: {
+                  title: subtask.subtaskTitle,
+                  taskId: id,
+                  isCompleted: false,
+                },
+              })
+            }
+          }) ?? [],
+        )
+
+        // Delete subtasks not included in the update
+        const subtaskIdsToUpdate =
+          subtasks
+            ?.map(({ subtaskId }) => subtaskId)
+            .filter(
+              (subtaskId): subtaskId is number => subtaskId !== undefined,
+            ) ?? []
+
+        await db.subtask.deleteMany({
+          where: {
+            taskId: id,
+            NOT: {
+              id: { in: subtaskIdsToUpdate },
+            },
+          },
+        })
+
+        return updatedTask
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -99,13 +162,7 @@ const tasksRouter = createTRPCRouter({
   get: privateProcedure
     .input(
       z.object({
-        id: z
-          .union([z.string(), z.number()])
-          .transform((value) => Number(value))
-          .refine(
-            (value) => !Number.isNaN(value),
-            "Couldn't parse the task id",
-          ),
+        id: idSchema,
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -138,13 +195,7 @@ const tasksRouter = createTRPCRouter({
   delete: privateProcedure
     .input(
       z.object({
-        id: z
-          .union([z.string(), z.number()])
-          .transform((value) => Number(value))
-          .refine(
-            (value) => !Number.isNaN(value),
-            "Couldn't parse the task id",
-          ),
+        id: idSchema,
       }),
     )
     .mutation(async ({ ctx, input }) => {

@@ -95,6 +95,10 @@ export default function EditTaskForm({
             title: values.taskTitle,
             description: values.description,
             columnId: Number(values.columnId),
+            subtasks: values.subtasks.filter(
+              (s): s is { subtaskTitle: string; subtaskId?: number } =>
+                Boolean(s.subtaskTitle),
+            ),
           },
           {
             onError: (error) => {
@@ -103,6 +107,7 @@ export default function EditTaskForm({
             onSuccess: () => {
               apiUtils.tasks.get
                 .invalidate()
+                .then(() => apiUtils.boards.getById.invalidate())
                 .then(() => toast.success('Task updated'))
                 .then(() => onClose())
                 .catch(() => toast.error('Failed to update task'))
