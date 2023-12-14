@@ -108,6 +108,9 @@ const tasksRouter = createTRPCRouter({
             data: { title, description, columnId },
           })
 
+          // IDs of newly created subtasks
+          const newSubtaskIds: number[] = []
+
           // Update and create subtasks
           await Promise.all(
             subtasks?.map(async (subtask) => {
@@ -122,18 +125,19 @@ const tasksRouter = createTRPCRouter({
                 })
               } else {
                 // Create new subtask
-                await prisma.subtask.create({
+                const newSubtask = await prisma.subtask.create({
                   data: {
                     title: subtask.subtaskTitle,
                     taskId: id,
                     isCompleted: subtask.isCompleted,
                   },
                 })
+                newSubtaskIds.push(newSubtask.id)
               }
             }) ?? [],
           )
 
-          // Filter out undefined values from subtask IDs
+          // IDs of existing subtasks to keep
           const subtaskIdsToUpdate =
             subtasks
               ?.map((subtask) => subtask.subtaskId)
@@ -141,15 +145,20 @@ const tasksRouter = createTRPCRouter({
                 (subtaskId): subtaskId is number => subtaskId !== undefined,
               ) ?? []
 
+          // Combine new and existing subtask IDs
+          const subtaskIdsToKeep = [...newSubtaskIds, ...subtaskIdsToUpdate]
+
           // Delete subtasks not included in the update
-          await prisma.subtask.deleteMany({
-            where: {
-              taskId: id,
-              NOT: {
-                id: { in: subtaskIdsToUpdate },
+          if (subtasks?.length) {
+            await prisma.subtask.deleteMany({
+              where: {
+                taskId: id,
+                NOT: {
+                  id: { in: subtaskIdsToKeep },
+                },
               },
-            },
-          })
+            })
+          }
 
           return updatedTask
         } catch (error) {
