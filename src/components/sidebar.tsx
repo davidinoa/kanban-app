@@ -23,8 +23,8 @@ export default function Sidebar() {
   const initialOpenState = useRef(isSidebarOpen ? 'open' : 'closed')
 
   const sidebarVariants = {
-    open: { width: 'auto' },
-    closed: { width: '0px' },
+    open: { width: 'auto', display: 'block' },
+    closed: { width: '0px', display: 'none' },
   }
 
   if (!data) return null
@@ -61,7 +61,7 @@ export default function Sidebar() {
                 <Button
                   variant="ghost"
                   className="group w-full justify-start gap-3 rounded-none rounded-r-full p-0 px-6 py-4 text-gray-100 hover:bg-purple-100/10 hover:text-purple-100 focus-visible:bg-purple-100/10 focus-visible:text-purple-100 dark:hover:bg-purple-100/10 lg:px-8 lg:text-base "
-                  onClick={() => setIsSidebarOpen(false)}
+                  onPress={() => setIsSidebarOpen(false)}
                 >
                   <HideSidebarIcon className="group-hover:[&_path]:fill-purple-100 group-focus-visible:[&_path]:fill-purple-100" />
                   Hide Sidebar
@@ -84,7 +84,7 @@ export default function Sidebar() {
         className={`absolute bottom-8 z-30 hidden rounded-l-none rounded-r-full p-5 md:block ${
           isSidebarOpen ? 'md:hidden' : ''
         }`}
-        onClick={() => setIsSidebarOpen(true)}
+        onPress={() => setIsSidebarOpen(true)}
       >
         <ShowSidebarIcon />
       </Button>
