@@ -51,14 +51,14 @@ export default function BoardActionsPopover() {
           <Button
             variant="ghost"
             className="w-full justify-start rounded-l-none rounded-r-full px-4 py-3 text-gray-100 data-[focus-visible=true]:bg-purple-100/10 data-[hover=true]:bg-purple-100/10 data-[focus-visible=true]:text-purple-100 data-[hover=true]:text-purple-100"
-            onClick={() => setStatus('editModalOpen')}
+            onPress={() => setStatus('editModalOpen')}
           >
             Edit Board
           </Button>
           <Button
             variant="ghost"
             className="w-full justify-start rounded-l-none rounded-r-full px-4 text-red-100 data-[focus-visible=true]:bg-red-100 data-[hover=true]:bg-red-100 data-[focus-visible=true]:text-white data-[hover=true]:text-white dark:data-[hover=true]:bg-red-100"
-            onClick={() => setStatus('deleteModalOpen')}
+            onPress={() => setStatus('deleteModalOpen')}
           >
             Delete Board
           </Button>
