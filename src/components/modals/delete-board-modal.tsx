@@ -6,6 +6,7 @@ import {
   ModalHeader,
 } from '@nextui-org/modal'
 import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
 import Button from '../button'
@@ -58,20 +59,23 @@ export default function DeleteBoardModal({
                 variant="danger"
                 className="w-full"
                 isLoading={isLoading}
-                onClick={() => {
+                onPress={() => {
+                  const errorMessage = 'An error occurred'
+                  const successMessage = 'Board deleted'
+                  const redirectPath = `/boards/${nextDefaultBoardId ?? 'new'}`
                   mutate(
                     { id: board.id },
                     {
+                      onError: (error) => {
+                        toast.error(error.message ?? errorMessage)
+                      },
                       onSuccess: () => {
                         apiUtils.boards.getAllNames
                           .invalidate()
-                          .then(() =>
-                            router.push(
-                              `/boards/${nextDefaultBoardId ?? 'new'}`,
-                            ),
-                          )
+                          .then(() => toast.success(successMessage))
                           .then(() => onClose())
-                          .catch(() => undefined)
+                          .then(() => router.push(redirectPath))
+                          .catch(() => toast.error(errorMessage))
                       },
                     },
                   )
@@ -82,7 +86,7 @@ export default function DeleteBoardModal({
               <Button
                 variant="secondary"
                 className="w-full"
-                onClick={onClose}
+                onPress={onClose}
                 disabled={isLoading}
               >
                 Cancel
