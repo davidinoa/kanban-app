@@ -46,7 +46,7 @@ export default function Header() {
           <div className="flex items-center gap-2 md:gap-4">
             <Button
               size="large"
-              disabled={!board}
+              disabled={!board || board?.columns.length === 0}
               className="hidden px-6 md:inline-block"
               onPress={() => setIsTaskModalOpen(true)}
             >
