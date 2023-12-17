@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import CrossIcon from '~/assets/icon-cross.svg'
 import { createFormSchema, type CreateFormValues } from '~/schemas/task-schemas'
 import { api, type RouterOutputs } from '~/utils/api'
@@ -76,14 +77,16 @@ export default function CreateTaskForm({
         }
 
         return createMutation.mutate(payload, {
+          onError: (error) => {
+            toast.error(error.message)
+          },
           onSuccess: () => {
             apiUtils.boards.getById
               .invalidate()
-              .then(() => {
-                reset()
-                onClose()
-              })
-              .catch(() => undefined)
+              .then(() => toast.success('Task updated'))
+              .then(() => reset())
+              .then(() => onClose())
+              .catch(() => toast.error('Failed to update task'))
           },
         })
       })}
