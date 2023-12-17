@@ -1,44 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { z } from 'zod'
 import CrossIcon from '~/assets/icon-cross.svg'
+import { createFormSchema, type CreateFormValues } from '~/schemas/task-schemas'
 import { api, type RouterOutputs } from '~/utils/api'
 import Button from '../button'
 import ColumnSelect from '../column-select'
-
-const maxTitleLength = 255
-const maxDescriptionLength = 5_000
-
-const titleTooLongMessage = `Title must be at most ${maxTitleLength} characters long`
-
-const subtaskSchema = z.union([
-  z.object({
-    subtaskId: z.string().optional(),
-    subtaskTitle: z
-      .string()
-      .max(maxTitleLength, titleTooLongMessage)
-      .optional(),
-  }),
-  z.object({
-    subtaskTitle: z
-      .string()
-      .max(maxTitleLength, titleTooLongMessage)
-      .optional(),
-  }),
-])
-
-const formSchema = z.object({
-  taskTitle: z
-    .string()
-    .min(1, 'Task title is required')
-    .max(maxTitleLength, titleTooLongMessage),
-  description: z.string().max(maxDescriptionLength).optional(),
-  subtasks: z.array(subtaskSchema),
-  columnId: z.string(),
-})
-
-type FormValues = z.infer<typeof formSchema>
 
 type FormState = {
   isLoading: boolean
@@ -62,8 +29,8 @@ export default function CreateTaskForm({
   const { isLoading } = createMutation
 
   const { register, handleSubmit, formState, reset, control } =
-    useForm<FormValues>({
-      resolver: zodResolver(formSchema),
+    useForm<CreateFormValues>({
+      resolver: zodResolver(createFormSchema),
       defaultValues: {
         taskTitle: '',
         description: '',
@@ -95,7 +62,7 @@ export default function CreateTaskForm({
   return (
     <form
       id="create-task-form"
-      className="flex flex-col gap-6 text-gray-100 dark:text-white py-2"
+      className="flex flex-col gap-6 py-2 text-gray-100 dark:text-white"
       onSubmit={handleSubmit((data) => {
         const { taskTitle, description, subtasks, columnId } = data
 

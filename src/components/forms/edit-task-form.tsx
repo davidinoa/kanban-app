@@ -2,33 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { z } from 'zod'
 import CrossIcon from '~/assets/icon-cross.svg'
+import { editFormSchema, type EditFormValues } from '~/schemas/task-schemas'
 import { api, type RouterOutputs } from '~/utils/api'
 import Button from '../button'
 import ColumnSelect from '../column-select'
-
-const maxTitleLength = 255
-const maxDescriptionLength = 5_000
-const titleTooLongMessage = `Title must be at most ${maxTitleLength} characters long`
-
-const subtaskSchema = z.object({
-  subtaskId: z.number().optional(),
-  subtaskTitle: z.string().max(maxTitleLength, titleTooLongMessage).optional(),
-})
-
-const formSchema = z.object({
-  taskId: z.number(),
-  taskTitle: z
-    .string()
-    .min(1, 'Task title is required')
-    .max(maxTitleLength, titleTooLongMessage),
-  description: z.string().max(maxDescriptionLength).nullable().optional(),
-  subtasks: z.array(subtaskSchema),
-  columnId: z.string(),
-})
-
-type FormValues = z.infer<typeof formSchema>
 
 type FormState = {
   isLoading: boolean
@@ -51,8 +29,8 @@ export default function EditTaskForm({
   const editMutation = api.tasks.update.useMutation()
 
   const { control, formState, handleSubmit, register, watch } =
-    useForm<FormValues>({
-      resolver: zodResolver(formSchema),
+    useForm<EditFormValues>({
+      resolver: zodResolver(editFormSchema),
       defaultValues: {
         taskId: task.id,
         taskTitle: task.title,
