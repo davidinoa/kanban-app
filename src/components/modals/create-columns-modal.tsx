@@ -51,10 +51,10 @@ export default function CreateColumnsModal({ boardId }: { boardId: number }) {
 
   return (
     <>
-      <div className="pt-12">
+      <div className="pt-10">
         <Button
           onPress={onOpen}
-          className="h-full w-full rounded-md bg-sky text-2xl font-bold text-gray-100 dark:bg-gray-300/25"
+          className="h-full w-full rounded-md bg-sky/50 text-2xl font-bold text-gray-100 hover:bg-sky dark:bg-gray-300/25"
         >
           + New Column
         </Button>
