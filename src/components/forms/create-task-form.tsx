@@ -12,6 +12,7 @@ type FormState = {
   isLoading: boolean
   isValid: boolean
   isDirty: boolean
+  isTextareaActive: boolean
 }
 
 type CreateTaskFormProps = {
@@ -29,7 +30,7 @@ export default function CreateTaskForm({
   const createMutation = api.tasks.create.useMutation()
   const { isLoading } = createMutation
 
-  const { register, handleSubmit, formState, reset, control } =
+  const { register, handleSubmit, formState, reset, control, watch } =
     useForm<CreateFormValues>({
       resolver: zodResolver(createFormSchema),
       defaultValues: {
@@ -44,7 +45,7 @@ export default function CreateTaskForm({
   const onFormStateChangeRef = useRef(onFormStateChange)
 
   const {
-    fields: columnFields,
+    fields: subtaskFields,
     append,
     remove,
   } = useFieldArray({
@@ -55,6 +56,7 @@ export default function CreateTaskForm({
   useEffect(() => {
     onFormStateChangeRef.current?.({
       isLoading,
+      isTextareaActive: false,
       isValid: formState.isValid,
       isDirty: formState.isDirty,
     })
@@ -109,10 +111,10 @@ export default function CreateTaskForm({
           className="scrollbar-hidden h-[4.7rem] w-full resize-none rounded-sm border border-gray-100/25 bg-transparent px-4 py-2 leading-[1.75] placeholder:text-gray-100/50 sm:h-[7rem]"
         />
       </label>
-      <fieldset className="flex max-h-60 flex-col gap-3 overflow-scroll">
+      <fieldset className="flex flex-col gap-3 overflow-hidden pr-1">
         <legend className="mb-2 text-xs font-bold md:text-sm">Subtasks</legend>
         <div className="flex flex-1 flex-col gap-3">
-          {columnFields.map((field, index) => (
+          {subtaskFields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-2 pr-2">
               <input
                 type="text"
@@ -122,9 +124,8 @@ export default function CreateTaskForm({
               />
               <Button
                 variant="icon"
-                aria-label="delete column"
+                aria-label="delete subtask"
                 className="-mr-2 h-fit px-2 py-2"
-                isDisabled={columnFields.length === 1}
                 onPress={() => remove(index)}
               >
                 <CrossIcon />
@@ -135,6 +136,7 @@ export default function CreateTaskForm({
         <Button
           variant="secondary"
           className="w-full flex-shrink-0"
+          isDisabled={watch('subtasks')?.at(-1)?.subtaskTitle === ''}
           onPress={() => append({ subtaskTitle: '' })}
         >
           + Add New Subtask

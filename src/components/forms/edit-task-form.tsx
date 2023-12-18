@@ -126,7 +126,7 @@ export default function EditTaskForm({
               />
               <Button
                 variant="icon"
-                aria-label="delete column"
+                aria-label="delete subtask"
                 className="-mr-2 h-fit px-2 py-2"
                 onPress={() => remove(index)}
               >
