@@ -12,7 +12,6 @@ type FormState = {
   isLoading: boolean
   isValid: boolean
   isDirty: boolean
-  isTextareaActive: boolean
 }
 
 type CreateTaskFormProps = {
@@ -56,7 +55,6 @@ export default function CreateTaskForm({
   useEffect(() => {
     onFormStateChangeRef.current?.({
       isLoading,
-      isTextareaActive: false,
       isValid: formState.isValid,
       isDirty: formState.isDirty,
     })
@@ -85,7 +83,7 @@ export default function CreateTaskForm({
           onSuccess: () => {
             apiUtils.boards.getById
               .invalidate()
-              .then(() => toast.success('Task updated'))
+              .then(() => toast.success('Task created successfully'))
               .then(() => reset())
               .then(() => onClose())
               .catch(() => toast.error('Failed to update task'))
@@ -133,14 +131,16 @@ export default function CreateTaskForm({
             </div>
           ))}
         </div>
-        <Button
-          variant="secondary"
-          className="w-full flex-shrink-0"
-          isDisabled={watch('subtasks')?.at(-1)?.subtaskTitle === ''}
-          onPress={() => append({ subtaskTitle: '' })}
-        >
-          + Add New Subtask
-        </Button>
+        <div className="px-1 pb-1">
+          <Button
+            variant="secondary"
+            className="w-full flex-shrink-0"
+            isDisabled={watch('subtasks')?.at(-1)?.subtaskTitle === ''}
+            onPress={() => append({ subtaskTitle: '' })}
+          >
+            + Add New Subtask
+          </Button>
+        </div>
       </fieldset>
       <ColumnSelect control={control} name="columnId" />
     </form>
@@ -151,5 +151,4 @@ export default function CreateTaskForm({
  * TODOS:
  * - Display errors to the users
  * - Disable input after reaching limit
- * - Cleanup submit handler
  */

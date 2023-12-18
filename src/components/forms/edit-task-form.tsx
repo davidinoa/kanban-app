@@ -87,7 +87,7 @@ export default function EditTaskForm({
               apiUtils.tasks.get
                 .invalidate()
                 .then(() => apiUtils.boards.getById.invalidate())
-                .then(() => toast.success('Task updated'))
+                .then(() => toast.success('Task updated successfully'))
                 .then(() => onClose())
                 .catch(() => toast.error('Failed to update task'))
             },
