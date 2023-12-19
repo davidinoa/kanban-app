@@ -16,6 +16,7 @@ import {
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useEffect, useState } from 'react'
 import { type RouterOutputs } from '~/trpc/shared'
+import { api } from '~/utils/api'
 import useAppStore from '~/zustand/app-store'
 import CreateColumnsModal from '../modals/create-columns-modal'
 import ViewTaskModal from '../modals/view-task-modal'
@@ -63,6 +64,8 @@ export default function Board({ board }: BoardProps) {
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
 
   useEffect(() => setTaskGroups(transformBoardToTaskGroups(board)), [board])
+
+  const updateTaskMutation = api.tasks.update.useMutation()
 
   function moveBetweenContainers<T extends keyof TaskGroups>({
     tasks,
@@ -130,13 +133,18 @@ export default function Board({ board }: BoardProps) {
 
     const activeItemId = active.id
     const overId = over.id
-    if (activeItemId === overId) return setActiveTaskId(null)
-
     const activeRefData = active.data.current as RefData
     const overData = over.data.current as RefData | undefined
-    const activeContainerId = activeRefData.sortable.containerId
     const overContainerId = (overData?.sortable.containerId ??
       over.id) as keyof TaskGroups
+
+    updateTaskMutation.mutate({
+      id: Number(activeTaskId),
+      columnId: Number(overContainerId),
+    })
+
+    if (activeItemId === overId) return setActiveTaskId(null)
+
     const activeItemIndex = activeRefData.sortable.index
     const overIndex =
       overId in taskGroups
@@ -149,24 +157,14 @@ export default function Board({ board }: BoardProps) {
       draggedElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
 
-    return setTaskGroups((prevItemGroups) =>
-      activeContainerId === overContainerId
-        ? {
-            ...prevItemGroups,
-            [overContainerId]: arrayMove(
-              prevItemGroups[overContainerId]!,
-              activeItemIndex,
-              overIndex,
-            ),
-          }
-        : moveBetweenContainers({
-            tasks: prevItemGroups,
-            activeContainerId,
-            activeItemIndex,
-            overContainerId,
-            overIndex,
-          }),
-    )
+    return setTaskGroups((prevItemGroups) => ({
+      ...prevItemGroups,
+      [overContainerId]: arrayMove(
+        prevItemGroups[overContainerId]!,
+        activeItemIndex,
+        overIndex,
+      ),
+    }))
   }
 
   return (
