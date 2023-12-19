@@ -49,7 +49,7 @@ export default function Task({
       style={{
         transition,
         listStyle: 'none',
-        transform: CSS.Transform.toString(transform),
+        transform: CSS.Translate.toString(transform),
         opacity: isDragging ? 0.5 : 1,
         cursor: displayOverlay ? 'grabbing' : 'grab',
       }}
