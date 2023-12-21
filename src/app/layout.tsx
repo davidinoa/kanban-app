@@ -33,24 +33,24 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <body suppressHydrationWarning>
         <ClerkProvider>
           <TRPCReactProvider cookies={cookies().toString()}>
-            <Providers>
-              <Suspense fallback="Loading...">
+            <Suspense fallback="Loading...">
+              <Providers>
                 <SignedIn>
                   <Layout>{children}</Layout>
                 </SignedIn>
-                <SignedOut>
-                  <ClerkLoading>
-                    <ClerkLoadingPage />
-                  </ClerkLoading>
-                  <ClerkLoaded>{children}</ClerkLoaded>
-                </SignedOut>
-                <Toaster
-                  toastOptions={{
-                    className: 'dark:bg-gray-200 dark:text-white',
-                  }}
-                />
-              </Suspense>
-            </Providers>
+              </Providers>
+              <SignedOut>
+                <ClerkLoading>
+                  <ClerkLoadingPage />
+                </ClerkLoading>
+                <ClerkLoaded>{children}</ClerkLoaded>
+              </SignedOut>
+              <Toaster
+                toastOptions={{
+                  className: 'dark:bg-gray-200 dark:text-white',
+                }}
+              />
+            </Suspense>
           </TRPCReactProvider>
         </ClerkProvider>
         <SpeedInsights />
