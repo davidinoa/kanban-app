@@ -12,7 +12,7 @@ export const buttonStyles = cva(
     'font-bold',
     'rounded-3xl',
     'data-[hover=true]:!opacity-100',
-    'disabled:data-[hover=true]:!opacity-30',
+    'disabled:data-[hover=true]:!bg-current/30',
     'disabled:opacity-30',
     'disabled:cursor-not-allowed',
     'disabled:pointer-events-auto',
@@ -29,6 +29,7 @@ export const buttonStyles = cva(
           'disabled:bg-purple-100',
           'hover:bg-purple-50',
           'text-white',
+          'active:bg-purple-50',
         ],
         secondary: [
           'bg-purple-100/10',

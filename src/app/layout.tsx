@@ -1,9 +1,16 @@
-import { ClerkProvider, SignedIn, SignedOut } from '@clerk/nextjs'
+import {
+  ClerkLoaded,
+  ClerkLoading,
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+} from '@clerk/nextjs'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import { cookies } from 'next/headers'
-import { type PropsWithChildren } from 'react'
+import { Suspense, type PropsWithChildren } from 'react'
 import { Toaster } from 'react-hot-toast'
+import ClerkLoadingPage from '~/components/clerk-loading-page'
 import Layout from '~/components/layout'
 import '~/styles/globals.css'
 import { TRPCReactProvider } from '~/trpc/react'
@@ -27,15 +34,22 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <ClerkProvider>
           <TRPCReactProvider cookies={cookies().toString()}>
             <Providers>
-              <SignedIn>
-                <Layout>{children}</Layout>
-              </SignedIn>
-              <SignedOut>{children}</SignedOut>
-              <Toaster
-                toastOptions={{
-                  className: 'dark:bg-gray-200 dark:text-white',
-                }}
-              />
+              <Suspense fallback="Loading...">
+                <SignedIn>
+                  <Layout>{children}</Layout>
+                </SignedIn>
+                <SignedOut>
+                  <ClerkLoading>
+                    <ClerkLoadingPage />
+                  </ClerkLoading>
+                  <ClerkLoaded>{children}</ClerkLoaded>
+                </SignedOut>
+                <Toaster
+                  toastOptions={{
+                    className: 'dark:bg-gray-200 dark:text-white',
+                  }}
+                />
+              </Suspense>
             </Providers>
           </TRPCReactProvider>
         </ClerkProvider>

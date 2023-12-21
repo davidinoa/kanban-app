@@ -14,6 +14,10 @@ export default {
       aria: {
         invalid: 'invalid="true"',
       },
+      backgroundImage: {
+        'landing-page-desktop': 'url("/bg-landing-desktop.svg")',
+        'landing-page-mobile': 'url("/bg-landing-mobile.svg")',
+      },
       colors: {
         black: '#000112',
         gray: {
