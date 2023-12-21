@@ -1,13 +1,11 @@
 'use client'
 
-import { SignOutButton } from '@clerk/nextjs'
 import {
   Button as NextUiButton,
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@nextui-org/react'
-import { redirect } from 'next/navigation'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import VerticalEllipsisIcon from '~/assets/icon-vertical-ellipsis.svg'
@@ -63,9 +61,6 @@ export default function BoardActionsPopover() {
           >
             Delete Board
           </Button>
-          <div className="px-4 py-2">
-            <SignOutButton signOutCallback={() => redirect('/')} />
-          </div>
         </PopoverContent>
       </Popover>
       <CreateEditBoardModal
