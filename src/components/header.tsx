@@ -72,7 +72,7 @@ export default function Header() {
       ) : null}
       <div className="justify-end">
         <UserButton
-          afterSignOutUrl="/"
+          afterSignOutUrl="/landing"
           appearance={{
             elements: {
               userButtonPopoverCard:

@@ -1,17 +1,16 @@
-import { SignIn } from '@clerk/nextjs'
+import { SignIn, auth } from '@clerk/nextjs'
+import { redirect } from 'next/navigation'
 
 export default function Page() {
+  const { userId } = auth()
+  if (userId) redirect('/')
+
   return (
-    <main className="bg-landing-page-mobile md:bg-landing-page-desktop grid h-screen w-screen place-content-center overflow-auto bg-purple-100/25 bg-cover bg-no-repeat p-8 md:bg-center">
+    <main className="grid h-screen w-screen place-content-center overflow-auto bg-purple-100/25 bg-landing-page-mobile bg-cover bg-no-repeat p-1 md:bg-landing-page-desktop md:bg-center">
       <SignIn
         afterSignUpUrl="/boards/new"
         afterSignInUrl="/"
         signUpUrl="/signup"
-        appearance={{
-          elements: {
-            footerActionLink: {},
-          },
-        }}
       />
     </main>
   )
