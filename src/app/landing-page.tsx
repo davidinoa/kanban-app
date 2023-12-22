@@ -17,11 +17,13 @@ export default function LandingPage() {
       <main className="m-auto grid min-w-fit max-w-5xl grow grid-rows-[auto,1fr] place-items-center text-white md:grid-cols-2 md:grid-rows-1 md:gap-16">
         <div className="relative w-[210px] pb-10 pr-10 md:w-full md:pb-20 md:pr-20">
           <Image
+            priority
             src={screenshot1}
             alt="screenhot of the app in large viewport and light mode"
             className="max-h-[80%] w-auto rounded-xl"
           />
           <Image
+            priority
             src={screenshot2}
             alt="screenshot of the app in mobile viewport and dark mode"
             className="absolute bottom-0 right-0 h-3/4 w-auto rounded-xl"
