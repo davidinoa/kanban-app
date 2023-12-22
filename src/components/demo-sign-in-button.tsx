@@ -17,7 +17,7 @@ export default function DemoSignInButton() {
       onPress={() => {
         signIn
           .create({
-            redirectUrl: '/',
+            redirectUrl: '/boards',
             identifier: process.env.NEXT_PUBLIC_DEMO_EMAIL,
             password: process.env.NEXT_PUBLIC_DEMO_PASSWORD,
           })
