@@ -1,12 +1,11 @@
 import { useSignIn } from '@clerk/clerk-react'
-import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import Button from './button'
 
 export default function DemoSignInButton() {
-  const router = useRouter()
   const { signIn, setActive, isLoaded } = useSignIn()
   const isLoading = !isLoaded || !signIn
+  if (isLoading || !setActive) return null
 
   return (
     <Button
@@ -16,19 +15,16 @@ export default function DemoSignInButton() {
       isLoading={isLoading}
       isDisabled={isLoading}
       onPress={() => {
-        signIn!
+        signIn
           .create({
+            redirectUrl: '/',
             identifier: process.env.NEXT_PUBLIC_DEMO_EMAIL,
             password: process.env.NEXT_PUBLIC_DEMO_PASSWORD,
           })
-          .then((result) => {
-            if (result.status === 'complete') {
-              setActive!({ session: result.createdSessionId }).catch(() =>
-                toast.error('Failed to sign in'),
-              )
-            }
+          .then(async (result) => {
+            if (result.status !== 'complete') throw new Error()
+            await setActive({ session: result.createdSessionId })
           })
-          .then(() => router.push('/'))
           .catch(() => toast.error('Failed to sign in'))
       }}
     >
