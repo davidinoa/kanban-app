@@ -10,7 +10,7 @@ import DemoSignInButton from '~/components/demo-sign-in-button'
 
 export default function LandingPage() {
   return (
-    <div className="flex h-screen w-screen flex-col overflow-auto bg-purple-100/25 bg-landing-page-mobile bg-cover bg-no-repeat p-8 md:bg-landing-page-desktop md:bg-center">
+    <div className="flex h-[100dvh] w-screen flex-col overflow-auto bg-purple-100/25 bg-landing-page-mobile bg-cover bg-no-repeat p-8 md:bg-landing-page-desktop md:bg-center">
       <header className="mb-8">
         <LogoLight />
       </header>

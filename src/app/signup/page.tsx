@@ -6,7 +6,7 @@ export default function Page() {
   if (userId) redirect('/')
 
   return (
-    <main className="grid h-screen w-screen place-content-center overflow-auto bg-purple-100/25 bg-landing-page-mobile bg-cover bg-no-repeat p-1 md:bg-landing-page-desktop md:bg-center">
+    <main className="grid h-[100dvh] w-screen place-content-center overflow-auto bg-purple-100/25 bg-landing-page-mobile bg-cover bg-no-repeat p-1 md:bg-landing-page-desktop md:bg-center">
       <SignUp
         afterSignUpUrl="/boards/new"
         signInUrl="/signin"
