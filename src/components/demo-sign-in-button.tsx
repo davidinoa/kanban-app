@@ -31,7 +31,7 @@ export default function DemoSignInButton() {
             }
           })
           .catch(() => toast.error('Failed to sign in'))
-          .finally(() => router.refresh())
+          .finally(() => router.push('/boards/'))
       }}
     >
       Demo
