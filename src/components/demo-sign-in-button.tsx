@@ -21,17 +21,18 @@ export default function DemoSignInButton() {
       onPress={() => {
         signIn
           .create({
-            redirectUrl: '/boards/',
+            redirectUrl: '/boards',
             identifier: process.env.NEXT_PUBLIC_DEMO_EMAIL,
             password: process.env.NEXT_PUBLIC_DEMO_PASSWORD,
           })
           .then(async (result) => {
+            console.error(result)
             if (result.status === 'complete') {
               await setActive({ session: result.createdSessionId })
             }
           })
           .catch(() => toast.error('Failed to sign in'))
-          .finally(() => router.push('/boards/'))
+          .finally(() => router.push('/boards'))
       }}
     >
       Demo
