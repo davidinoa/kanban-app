@@ -1,3 +1,5 @@
+'use client'
+
 import { useSignIn } from '@clerk/clerk-react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
