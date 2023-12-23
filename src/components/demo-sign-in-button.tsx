@@ -1,5 +1,4 @@
 import { useSignIn } from '@clerk/clerk-react'
-import { redirect } from 'next/navigation'
 import toast from 'react-hot-toast'
 import Button from './button'
 
@@ -18,7 +17,7 @@ export default function DemoSignInButton() {
       onPress={() => {
         signIn
           .create({
-            redirectUrl: '/boards',
+            // redirectUrl: '/boards',
             identifier: process.env.NEXT_PUBLIC_DEMO_EMAIL,
             password: process.env.NEXT_PUBLIC_DEMO_PASSWORD,
           })
@@ -26,7 +25,6 @@ export default function DemoSignInButton() {
             if (result.status !== 'complete') throw new Error()
             await setActive({ session: result.createdSessionId })
           })
-          .then(() => redirect('/boards'))
           .catch(() => toast.error('Failed to sign in'))
       }}
     >
