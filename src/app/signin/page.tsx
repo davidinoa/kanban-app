@@ -7,11 +7,7 @@ export default function Page() {
 
   return (
     <main className="grid h-[100dvh] w-screen place-content-center overflow-auto bg-purple-100/25 bg-landing-page-mobile bg-cover bg-no-repeat p-1 md:bg-landing-page-desktop md:bg-center">
-      <SignIn
-        afterSignUpUrl="/boards/new"
-        afterSignInUrl="/"
-        signUpUrl="/signup"
-      />
+      <SignIn afterSignInUrl="/" signUpUrl="/signup" />
     </main>
   )
 }
