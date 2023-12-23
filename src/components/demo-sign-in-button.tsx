@@ -2,7 +2,6 @@
 
 import { useSignIn } from '@clerk/clerk-react'
 import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
 import Button from './button'
 
 export default function DemoSignInButton() {
@@ -18,21 +17,24 @@ export default function DemoSignInButton() {
       className="px-12"
       isLoading={isLoading}
       isDisabled={isLoading}
-      onPress={() => {
-        signIn
-          .create({
-            redirectUrl: '/',
-            identifier: process.env.NEXT_PUBLIC_DEMO_EMAIL,
-            password: process.env.NEXT_PUBLIC_DEMO_PASSWORD,
-          })
-          .then(async (result) => {
-            console.error(result)
-            if (result.status === 'complete') {
-              await setActive({ session: result.createdSessionId })
-            }
-          })
-          .catch(() => toast.error('Failed to sign in'))
-          .finally(() => router.push('/'))
+      onPress={async () => {
+        if (signIn.id) return router.push('/')
+        try {
+          await signIn
+            .create({
+              identifier: process.env.NEXT_PUBLIC_DEMO_EMAIL,
+              password: process.env.NEXT_PUBLIC_DEMO_PASSWORD,
+            })
+            .then((result) => {
+              if (result.status === 'complete') {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                setActive({ session: result.createdSessionId })
+              }
+            })
+        } catch (error) {
+          console.error(error)
+        }
+        return null
       }}
     >
       Demo

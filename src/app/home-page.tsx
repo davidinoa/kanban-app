@@ -1,6 +1,5 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
 import { Spinner } from '@nextui-org/spinner'
 import { notFound } from 'next/navigation'
 import { useEffect } from 'react'
@@ -14,8 +13,6 @@ type HomePageProps = {
 }
 
 export default function HomePage({ boardId }: HomePageProps) {
-  const { isLoaded: userIsLoaded } = useUser()
-
   const currentBoardQuery = api.boards.getById.useQuery(
     { id: Number(boardId) },
     { enabled: Boolean(boardId) && boardId !== 'new', staleTime: Infinity },
@@ -48,7 +45,7 @@ export default function HomePage({ boardId }: HomePageProps) {
     return <div>{currentBoardQuery.error.message}</div>
   }
 
-  if (!userIsLoaded || currentBoardQuery.isLoading) {
+  if (currentBoardQuery.isLoading) {
     return (
       <div className="place-items-centers grid h-full w-full">
         <Spinner
