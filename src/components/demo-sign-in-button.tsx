@@ -33,7 +33,7 @@ export default function DemoSignInButton() {
           console.error(error)
           window.location.href = '/'
         }
-        return null
+        window.location.href = '/'
       }}
     >
       Demo
