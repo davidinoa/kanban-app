@@ -21,6 +21,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   style: ['normal', 'italic'],
   subsets: ['latin'],
   display: 'swap',
+  preload: true,
 })
 
 export default function RootLayout({ children }: PropsWithChildren) {
