@@ -32,7 +32,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>
-        <ClerkProvider>
+        <ClerkProvider afterSignInUrl="/">
           <TRPCReactProvider cookies={cookies().toString()}>
             <Providers>
               <SignedIn>

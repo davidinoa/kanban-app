@@ -1,6 +1,14 @@
+'use client'
+
 import { Link } from '@nextui-org/link'
+import { redirect, usePathname } from 'next/navigation'
 
 export default function NotFound() {
+  const pathname = usePathname()
+  if (pathname === '/sign-in') {
+    redirect('/')
+  }
+
   return (
     <div className="grid h-full place-items-center">
       <section className="flex flex-col items-center gap-4">

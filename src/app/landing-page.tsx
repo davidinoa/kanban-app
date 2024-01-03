@@ -6,7 +6,6 @@ import LogoLight from '~/assets/logo-light.svg'
 import screenshot1 from '~/assets/screenshot-1.png'
 import screenshot2 from '~/assets/screenshot-2.png'
 import Button from '~/components/button'
-import DemoSignInButton from '~/components/demo-sign-in-button'
 
 export default function LandingPage() {
   return (
@@ -39,10 +38,10 @@ export default function LandingPage() {
             is enhanced, not overwhelmed.
           </p>
           <div className="flex gap-4">
-            <Button size="large" className="px-12" as={Link} href="/signin">
+            <Button size="large" className="px-12" as={Link} href="/sign-in">
               Sign in
             </Button>
-            <DemoSignInButton />
+            {/* <DemoSignInButton /> */}
           </div>
         </div>
       </main>
