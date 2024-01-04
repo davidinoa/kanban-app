@@ -1,30 +1,52 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useRef, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import HideSidebarIcon from '~/assets/icon-hide-sidebar.svg'
 import ShowSidebarIcon from '~/assets/icon-show-sidebar.svg'
 import LogoDark from '~/assets/logo-dark.svg'
 import LogoLight from '~/assets/logo-light.svg'
 import { api } from '~/utils/api'
-import useAppStore from '~/zustand/app-store'
 import BoardsNav from './boards-nav'
 import Button from './button'
 import CreateEditBoardModal from './modals/create-edit-board-modal'
 import ThemeSwitch from './theme-switch'
 
 export default function Sidebar() {
-  const { isSidebarOpen, setIsSidebarOpen } = useAppStore()
+  const searchParams = useSearchParams()
+  const { replace } = useRouter()
+  const pathname = usePathname()
+  const isModalOpen = searchParams.get('creatingBoard') === 'true'
+  const isSidebarOpen = searchParams.get('sidebar') === 'true'
+  const sidebarStatus = isSidebarOpen ? 'open' : 'closed'
+
   const { data } = api.boards.getAllNames.useQuery(undefined, {
     staleTime: Infinity,
   })
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const initialOpenState = useRef(isSidebarOpen ? 'open' : 'closed')
 
   const sidebarVariants = {
     open: { width: 'auto', display: 'block' },
     closed: { width: '0px', display: 'none' },
+  }
+
+  function toggleModal() {
+    const params = new URLSearchParams(searchParams)
+    if (params.get('creatingBoard')) {
+      params.delete('creatingBoard')
+    } else {
+      params.set('creatingBoard', 'true')
+    }
+    replace(`${pathname}?${params.toString()}`)
+  }
+
+  function toggleSidebar() {
+    const params = new URLSearchParams(searchParams)
+    if (params.get('sidebar')) {
+      params.delete('sidebar')
+    } else {
+      params.set('sidebar', 'true')
+    }
+    replace(`${pathname}?${params.toString()}`)
   }
 
   if (!data) return null
@@ -32,8 +54,8 @@ export default function Sidebar() {
   return (
     <>
       <motion.aside
-        initial={initialOpenState.current}
-        animate={isSidebarOpen ? 'open' : 'closed'}
+        initial={sidebarStatus}
+        animate={sidebarStatus}
         variants={sidebarVariants}
         className="overflow-auto overflow-x-hidden bg-white dark:bg-gray-300"
       >
@@ -51,7 +73,7 @@ export default function Sidebar() {
           <div className="scrollbar-hidden flex grow flex-col gap-4 overflow-y-auto">
             <BoardsNav
               className="grow md:pr-5 lg:pr-6"
-              onCreateBoardClick={() => setIsModalOpen(true)}
+              onCreateBoardClick={toggleModal}
             />
             <div className="flex flex-col gap-2 pb-8">
               <div className="px-3 lg:px-6">
@@ -61,7 +83,7 @@ export default function Sidebar() {
                 <Button
                   variant="ghost"
                   className="group w-full justify-start gap-3 rounded-none rounded-r-full p-0 px-6 py-4 text-gray-100 hover:bg-purple-100/10 hover:text-purple-100 focus-visible:bg-purple-100/10 focus-visible:text-purple-100 dark:hover:bg-purple-100/10 lg:px-8 lg:text-base "
-                  onPress={() => setIsSidebarOpen(false)}
+                  onPress={toggleSidebar}
                 >
                   <HideSidebarIcon className="group-hover:[&_path]:fill-purple-100 group-focus-visible:[&_path]:fill-purple-100" />
                   Hide Sidebar
@@ -75,7 +97,7 @@ export default function Sidebar() {
       <CreateEditBoardModal
         mode="create"
         isOpen={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        onOpenChange={toggleModal}
       />
 
       <Button
@@ -84,7 +106,7 @@ export default function Sidebar() {
         className={`absolute bottom-8 z-30 hidden rounded-l-none rounded-r-full p-5 md:block ${
           isSidebarOpen ? 'md:hidden' : ''
         }`}
-        onPress={() => setIsSidebarOpen(true)}
+        onPress={toggleSidebar}
       >
         <ShowSidebarIcon />
       </Button>

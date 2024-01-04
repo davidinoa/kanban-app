@@ -35,6 +35,7 @@ const config = {
         checksVoidReturn: { attributes: false },
       },
     ],
+    '@typescript-eslint/unbound-method': 'off',
     'import/no-extraneous-dependencies': 'off',
     'jsx-a11y/label-has-associated-control': [
       'error',
@@ -43,6 +44,7 @@ const config = {
         depth: 3,
       },
     ],
+    'react/jsx-no-bind': 'off',
     'react/jsx-props-no-spreading': 'off',
     'react/require-default-props': 'off',
   },
