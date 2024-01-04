@@ -2,6 +2,7 @@
 
 import { UserButton } from '@clerk/nextjs'
 import { Divider } from '@nextui-org/divider'
+import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import AddTaskIcon from '~/assets/icon-add-task-mobile.svg'
 import LogoDark from '~/assets/logo-dark.svg'
@@ -15,7 +16,8 @@ import CreateEditTaskModal from './modals/create-edit-task-modal'
 
 export default function Header() {
   const board = useAppStore((state) => state.currentBoard)
-  const isSidebarOpen = useAppStore((state) => state.isSidebarOpen)
+  const searchParams = useSearchParams()
+  const isSidebarOpen = searchParams.get('sidebar') === 'true'
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
 
   return (
