@@ -1,6 +1,5 @@
 'use client'
 
-import { UserButton } from '@clerk/nextjs'
 import { Divider } from '@nextui-org/divider'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
@@ -72,19 +71,6 @@ export default function Header() {
           </div>
         </>
       ) : null}
-      <div className="justify-end">
-        <UserButton
-          afterSignOutUrl="/landing"
-          appearance={{
-            elements: {
-              userButtonPopoverCard:
-                'dark:bg-gray-300 dark:text-white shadow-lg mt-4',
-              userButtonPopoverActionButtonText: 'dark:text-white',
-              userButtonPopoverActionButtonIconBox: 'dark:[&>svg]:text-white',
-            },
-          }}
-        />
-      </div>
     </header>
   )
 }
