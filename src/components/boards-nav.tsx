@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { type ComponentProps } from 'react'
 import BoardIcon from '~/assets/icon-board.svg'
 import { api } from '~/utils/api'
@@ -19,7 +19,7 @@ export default function BoardsNav({
     staleTime: Infinity,
   })
   const pathname = usePathname()
-
+  const params = useSearchParams()
   if (!data) return null
 
   return (
@@ -35,7 +35,9 @@ export default function BoardsNav({
           return (
             <li key={board.id}>
               <Link
-                href={`/boards/${board.id}`}
+                href={`/boards/${board.id}${
+                  params.size > 0 && `?${params.toString()}`
+                }`}
                 className={`lg: group flex items-center gap-3 rounded-r-full px-6 py-4 transition-colors lg:px-8 ${
                   isLinkActive
                     ? 'bg-purple-100 text-white'
