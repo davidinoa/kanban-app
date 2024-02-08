@@ -36,7 +36,7 @@ export default function BoardsNav({
             <li key={board.id}>
               <Link
                 href={`/boards/${board.id}${
-                  params.size > 0 && `?${params.toString()}`
+                  params.size > 0 ? `?${params.toString()}` : ''
                 }`}
                 className={`lg: group flex items-center gap-3 rounded-r-full px-6 py-4 transition-colors lg:px-8 ${
                   isLinkActive
