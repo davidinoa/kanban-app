@@ -8,9 +8,7 @@ export default authMiddleware({
     '/',
     '/_vercel/speed-insights/vitals',
     '/signup',
-    '/landing',
     '/((?!.+\\.[\\w]+$|_next).*)',
-    '/',
     '/(api|trpc)(.*)',
   ],
 })
