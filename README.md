@@ -2,7 +2,9 @@
 
 This project introduces a dynamic and versatile Kanban task management application, designed to offer an intuitive and efficient platform for managing tasks and projects through a visual board. The application mimics the traditional Kanban methodology, enabling users to organize tasks into customizable boards and columns that represent different stages of a project. The primary goal of this project was to build a highly responsive and user-friendly application that not only aids in task organization but also enhances productivity and project management capabilities.
 
-Emphasis was placed on creating a seamless user experience across all device sizes, integrating interactive features, and ensuring data integrity through robust form validations. The application supports extensive customization, allowing users to create, modify, and manage boards and tasks according to their specific workflow requirements.
+Emphasis was placed on creating a seamless user experience across all device sizes, integrating interactive features, and ensuring data integrity through robust form validations.
+
+The application supports extensive customization, allowing users to create, modify, and manage boards and tasks according to their specific workflow requirements.
 
 ## Features
 
