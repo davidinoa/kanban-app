@@ -5,8 +5,11 @@ export const metadata: Metadata = {
   title: 'Kanban',
 }
 
-type PageProps = { params: { id: string } }
-
-export default function Page({ params }: PageProps) {
-  return <HomePage boardId={params.id} />
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+  return <HomePage boardId={id} />
 }

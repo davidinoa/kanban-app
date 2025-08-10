@@ -7,7 +7,6 @@ const config = {
   plugins: ['@typescript-eslint'],
   extends: [
     'airbnb',
-    'airbnb/hooks',
     'airbnb-typescript',
     'next/core-web-vitals',
     'plugin:@typescript-eslint/recommended-type-checked',

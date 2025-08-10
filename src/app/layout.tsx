@@ -17,7 +17,13 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   preload: true,
 })
 
-export default function RootLayout({ children }: PropsWithChildren) {
+export default async function RootLayout({ children }: PropsWithChildren) {
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore
+    .getAll()
+    .map(({ name, value }) => `${name}=${value}`)
+    .join('; ')
+
   return (
     <html
       lang="en"
@@ -26,7 +32,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
     >
       <body suppressHydrationWarning>
         <ClerkProvider>
-          <TRPCReactProvider cookies={cookies().toString()}>
+          <TRPCReactProvider cookies={cookieHeader}>
             <Providers>
               <Layout>{children}</Layout>
             </Providers>
