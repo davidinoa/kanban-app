@@ -1,7 +1,6 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Plus_Jakarta_Sans } from 'next/font/google'
-import { cookies } from 'next/headers'
 import { type PropsWithChildren } from 'react'
 import { Toaster } from 'react-hot-toast'
 import Layout from '~/components/layout'
@@ -17,12 +16,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   preload: true,
 })
 
-export default async function RootLayout({ children }: PropsWithChildren) {
-  const cookieStore = await cookies()
-  const cookieHeader = cookieStore
-    .getAll()
-    .map(({ name, value }) => `${name}=${value}`)
-    .join('; ')
+export default function RootLayout({ children }: PropsWithChildren) {
+  const cookieHeader = ''
 
   return (
     <html

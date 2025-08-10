@@ -7,8 +7,7 @@ export const metadata: Metadata = {
   description: 'Minimalist task management app',
 }
 
-// This page reads cookies via tRPC server context, so force dynamic rendering
-export const dynamic = 'force-dynamic'
+// Static behavior as before
 
 export default async function Page() {
   const boardNamesQuery = await api.boards.getAllNames.query()
