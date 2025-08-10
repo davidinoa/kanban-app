@@ -34,7 +34,10 @@ const config = {
     return config
   },
   reactStrictMode: true,
-  // App Router internationalization is configured differently in Next 15.
+  i18n: {
+    locales: ['en'],
+    defaultLocale: 'en',
+  },
 }
 
 export default config

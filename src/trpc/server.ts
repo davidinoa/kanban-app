@@ -19,8 +19,8 @@ import { transformer } from './shared'
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
  * handling a tRPC call from a React Server Component.
  */
-const createContext = cache(async () => {
-  const cookieStore = await cookies()
+const createContext = cache(() => {
+  const cookieStore = cookies()
   const cookieHeader = cookieStore
     .getAll()
     .map(({ name, value }) => `${name}=${value}`)
@@ -49,8 +49,9 @@ const api = createTRPCProxyClient<typeof appRouter>({
     () =>
       ({ op }) =>
         observable((observer) => {
-          createContext()
-            .then((ctx) =>
+          try {
+            const ctx = createContext()
+            Promise.resolve(
               callProcedure({
                 // eslint-disable-next-line no-underscore-dangle
                 procedures: appRouter._def.procedures,
@@ -60,13 +61,16 @@ const api = createTRPCProxyClient<typeof appRouter>({
                 type: op.type,
               }),
             )
-            .then((data) => {
-              observer.next({ result: { data } })
-              observer.complete()
-            })
-            .catch((cause: TRPCErrorResponse) => {
-              observer.error(TRPCClientError.from(cause))
-            })
+              .then((data) => {
+                observer.next({ result: { data } })
+                observer.complete()
+              })
+              .catch((cause: TRPCErrorResponse) => {
+                observer.error(TRPCClientError.from(cause))
+              })
+          } catch (cause) {
+            observer.error(TRPCClientError.from(cause as TRPCErrorResponse))
+          }
         }),
   ],
 })
