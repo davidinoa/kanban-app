@@ -19,16 +19,20 @@ import { transformer } from './shared'
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
  * handling a tRPC call from a React Server Component.
  */
-const createContext = cache(() =>
-  Promise.resolve(
-    createTRPCContext({
-      headers: new Headers({
-        cookie: cookies().toString(),
-        'x-trpc-source': 'rsc',
-      }),
+const createContext = cache(async () => {
+  const cookieStore = await cookies()
+  const cookieHeader = cookieStore
+    .getAll()
+    .map(({ name, value }) => `${name}=${value}`)
+    .join('; ')
+
+  return createTRPCContext({
+    headers: new Headers({
+      cookie: cookieHeader,
+      'x-trpc-source': 'rsc',
     }),
-  ),
-)
+  })
+})
 
 const api = createTRPCProxyClient<typeof appRouter>({
   transformer,
